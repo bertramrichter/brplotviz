@@ -1,4 +1,4 @@
-Plot utitilies for my personal taste using `matplotlib`.
+Plot utitilies using `matplotlib` and nicely formatted output of tables according to my personal taste .
 
 # Installation and Building documentation
 In order to use this framework, make sure, that:

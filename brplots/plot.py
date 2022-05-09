@@ -232,5 +232,5 @@ if __name__ == "__main__":
 	tick_labels = ["ja", "nein", "vllt"]
 	bar_categories(table)
 	bar_categories(table, category_names=["A", "B", "C"], record_names=["erstens", "zweitens"])
-	graph(x_table, y_table, style="line")
-	graph(x_table, y_table, style="scatter")
+	multi_graph(x_table, y_table, style="line")
+	multi_graph(x_table, y_table, style="scatter")
