@@ -1,0 +1,7 @@
+# Ignore list for git
+_*
+.*
+!.gitignore
+Documentation
+test*
+Test*
