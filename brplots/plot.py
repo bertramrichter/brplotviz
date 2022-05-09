@@ -2,7 +2,7 @@
 ## \file
 ## Contains functions for plotting.
 ## \author Bertram Richter
-## \package plotting \copydoc plotting.py
+## \package plot \copydoc plot.py
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -32,12 +32,12 @@ def graph(x_values: list,
 					file: str = None):
 	"""
 	This function plots a single graph, either as line or scatter plot.
-	\param x_values List of lists, where each entry (line) is a data record for the x values.
-	\param y_values List of lists, where each entry (line) is a data record for the y values.
+	\param x_values List of the x values.
+	\param y_values List of the y values.
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
-	\param record_names Names of the table rows (records).
-		If left `None` (Default), then each record is named `Record <n>` with n as a serial number.
+	\param record_name Names of the data record.
+		If left `None` (Default), no legend is plot.
 		\todo Default to no legend, if set to `None`.
 	\param tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.

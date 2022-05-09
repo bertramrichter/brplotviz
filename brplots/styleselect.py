@@ -2,7 +2,7 @@
 ## \file
 ## Contains functions for setting the plot style.
 ## \author Bertram Richter
-## \package style_select \copydoc style_select.py
+## \package styleselect \copydoc styleselect.py
 
 from cycler import cycler, concat
 from matplotlib import pyplot as plt
