@@ -23,55 +23,17 @@ def get_figure():
 def graph(x_values: list,
 					y_values: list,
 					record_name: list = None,
-					xlabel: str = None,
-					ylabel: str = None,
-					tick_pos: list = None,
-					tick_labels: list = None,
-					style: str = "line",
-					show_legend: bool = None,
-					file: str = None):
+					*args, **kwargs):
 	"""
-	This function plots a single graph, either as line or scatter plot.
-	\param x_values List of the x values.
-	\param y_values List of the y values.
-	\param xlabel Description of the x-axis. Defaults to `None`.
-	\param ylabel Description of the y-axis. Defaults to `None`.
-	\param record_name Names of the data record.
-		If left `None` (Default), no legend is plot.
-		\todo Default to no legend, if set to `None`.
-	\param tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
-		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
-	\param tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
-		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
-	\param style Plotting style. Available options:
-		- `"plot"` Generates a line plot.
-		- `"scatter"` Generates a scatter plot.
-	\param show_legend Switch, whether the legend should be shown.
-		Defaults to `None`, which will show a legend, if `record_names is not None`.
-		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
-	\param file See \ref show_save_fig().
+	This function plots a single graph, either as line or scatter plot. It's just a wrapper around \ref multi_graph().
+	The only difference is, that the attributes `x_values` and  `y_values` are wrapped into another list:
+	\param x_values List of floats for the x-axis values. Will be wrapped for \ref multi_graph(): `[x_values]` &rarr; `x_table`.
+	\param y_values List of floats for the y-axis values. Will be wrapped for \ref multi_graph(): `[y_values]` &rarr; `y_table`.
+	\param record_name Will be passed to to the `record_names`. in \ref multi_graph().
+	\param *args Positional arguments, will be passed to \ref multi_graph().
+	\param *kwargs Keyword arguments, will be passed to \ref multi_graph().
 	"""
-	show_legend = show_legend if show_legend is not None else (record_name is not None)
-	assert len(x_values) == len(y_values)
-	fig, ax = get_figure()
-	# Get the correct plot style
-	if style == "line":
-		plot_style = styleselect.get_plot_style_line()
-	elif style == "scatter":
-		plot_style = styleselect.get_plot_style_scatter()
-	ax.set_prop_cycle(plot_style)
-	# Draw the graphs
-	ax.plot(x_values, y_values, label=record_name)
-	# Appearance
-	if tick_pos is not None and tick_labels is not None:
-		ax.set_xticks(ticks=tick_pos, labels=tick_labels, rotation=45)
-	if xlabel is not None:
-		ax.set_xlabel(xlabel)
-	if ylabel is not None:
-		ax.set_ylabel(ylabel)
-	if show_legend:
-		ax.legend(loc="best")
-	show_save_fig(fig, file)
+	multi_graph(x_table=[x_values], y_table=[y_values], record_names=record_name, *args, **kwargs)
 	
 def multi_graph(x_table: list,
 					y_table: list,
@@ -230,7 +192,7 @@ if __name__ == "__main__":
 	y_table = [[1,2,3,4],[7,6,5,4,7]]
 	tick_pos = [2,3,5]
 	tick_labels = ["ja", "nein", "vllt"]
-	bar_categories(table)
 	bar_categories(table, category_names=["A", "B", "C"], record_names=["erstens", "zweitens"])
 	multi_graph(x_table, y_table, style="line")
 	multi_graph(x_table, y_table, style="scatter")
+	graph(*table)
