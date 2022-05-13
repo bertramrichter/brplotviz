@@ -84,11 +84,11 @@ def mixed_graphs(record_list: list,
 	\param tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
-	\param file See \ref _show_save_fig().
+	\param file See \ref show_save_fig().
 	"""
 	#show_legend = show_legend if show_legend is not None else (record_names is not None)
 	#record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
-	fig, ax = _get_figure()
+	fig, ax = get_figure()
 	# Get the plot styles
 	line_style = styleselect.get_plot_style_line()()		# a cycler is returned, the second () turns the cycler into an iterator
 	scatter_style = styleselect.get_plot_style_scatter()()	# a cycler is returned, the second () turns the cycler into an iterator
@@ -110,7 +110,7 @@ def mixed_graphs(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	_show_save_fig(fig, file)
+	show_save_fig(fig, file)
 
 def bar_variable(bins: list, y_values: tuple):
 	"""
@@ -120,7 +120,7 @@ def bar_variable(bins: list, y_values: tuple):
 	\param y_values List of lists. For each entry in `classes` there should be list of y_values. e.g. [[1],[2,3],[4,5,6,7]]
 		They are grouped around symmetrically around the position of the class location.
 	"""
-	fig, ax = _get_figure()
+	fig, ax = get_figure()
 	plot_style = styleselect.get_plot_style_hatch()
 	hatch_list = list(plot_style)
 	if len(y_values) > len(hatch_list):
@@ -136,7 +136,7 @@ def bar_variable(bins: list, y_values: tuple):
 			ax.bar(x=pos_x+j*d_x, height=h, width=d_x, **hatch_list[j])
 	ax.set_xticks(ticks=bin_position_list, labels=bins, rotation=45)
 	ax.legend(loc="best")
-	_show_save_fig(fig)
+	show_save_fig(fig)
 
 def bar_categories(record_list: list,
 					xlabel: str = None,
@@ -156,7 +156,7 @@ def bar_categories(record_list: list,
 	\param show_legend Switch, whether the legend should be shown.
 		Defaults to `None`, which will show a legend, if `record_names is not None`.
 		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
-	\param file See \ref _show_save_fig().
+	\param file See \ref show_save_fig().
 	"""
 	# Setup: set, if the legend should be shown or not, set default labels for categories and records
 	show_legend = show_legend if show_legend is not None else (record_names is not None)
@@ -164,7 +164,7 @@ def bar_categories(record_list: list,
 	record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(record_list)+1) ]
 	assert len(record_list) == len(record_names)
 	
-	fig, ax = _get_figure()
+	fig, ax = get_figure()
 	plot_style = styleselect.get_plot_style_hatch()
 	hatch_list = list(plot_style)
 	if len(record_list) > len(hatch_list):
@@ -187,9 +187,9 @@ def bar_categories(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	_show_save_fig(fig, file=file)
+	show_save_fig(fig, file=file)
 
-def _get_figure():
+def get_figure():
 	"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
 	\return `fig, ax` Figure and Axis object.
@@ -201,12 +201,13 @@ def _get_figure():
 	fig.set_tight_layout("tight")
 	return fig, ax
 
-def _show_save_fig(fig, file: str = None):
+def show_save_fig(fig, file: str = None, closeafter: bool = True):
 	"""
-	Shows or saves the plot.
+	Shows or saves the figure.
 	\param fig Figure to be shown or saved.
 	\param file Path to the file in which the graph is saved. Defaults to `None`, which means the graph is shown on screen instead of saved to disk.
 		If a valid path is given, the graph is saved to this file. Overwrites the content of the file without further questions.
+	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
 	if file is None:
 		# use `plt.show()` for staying open figure_handling the window is closed. It manages the event loop, which `fig.show()` does not.
@@ -217,7 +218,8 @@ def _show_save_fig(fig, file: str = None):
 		try: fig.savefig(file)
 		except: print('Failed to save plot to file "{}"'.format(file))
 	# close the current figure, cleans the memory.
-	plt.close(fig)
+	if closeafter:
+		plt.close(fig)
 
 if __name__ == "__main__":
 	pass

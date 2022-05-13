@@ -20,7 +20,6 @@ def set_plot_style_fig():
 	"""
 	plt.rcParams['svg.fonttype'] = 'none'
 	plt.rcParams['font.size'] = '10'
-	#raise NotImplementedError()
 
 def get_plot_style_line():
 	"""
