@@ -1,4 +1,4 @@
-Plot utitilies using `matplotlib` and nicely formatted output of tables according to my personal taste .
+`brplotviz` are plot utitilies for outputting plots using `matplotlib` and nicely formatted tables according to the personal taste of Bertram Richter.
 
 # Installation and Building documentation
 In order to use this framework, make sure, that:

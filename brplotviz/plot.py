@@ -35,7 +35,7 @@ def single_scatter(x_values: list, y_values: list, record_name: str = None, *arg
 		kwargs["show_legend"] = False
 	mixed_graphs([(x_values, y_values, record_name, "scatter")], *args, **kwargs)
 
-def multi_line(x_table, y_table, record_names,  *args, **kwargs):
+def multi_line(x_table, y_table, record_names, *args, **kwargs):
 	"""
 	This function plots multiple line graphs in a single figure. It's just a wrapper around \ref mixed_graphs().
 	\param x_table List of lists, where each entry (line) is a data record for the x values.
@@ -48,7 +48,7 @@ def multi_line(x_table, y_table, record_names,  *args, **kwargs):
 	record_list = list(zip(x_table, y_table, record_names, ["line"]*len(x_table)))
 	mixed_graphs(record_list, *args, **kwargs)
 
-def multi_scatter(x_table, y_table, record_names,  *args, **kwargs):
+def multi_scatter(x_table, y_table, record_names, *args, **kwargs):
 	"""
 	This function plots  multiple scatter graphs in a single figure. It's just a wrapper around \ref mixed_graphs().
 	\param x_table List of lists, where each entry (line) is a data record for the x values.
