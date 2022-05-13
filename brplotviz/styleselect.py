@@ -36,7 +36,7 @@ def get_plot_style_scatter():
 	"""
 	color = cycler('color', ["black"])
 	linestyle = cycler("linestyle", [""])
-	marker = cycler('marker', ['o', 'v', '^', '<', '>', '8', 's', 'p', '*', 'h', 'H', 'D', 'd', 'P', 'X'])
+	marker = cycler('marker', ["o", "+", "x", 'v', '^', '<', '>', '8', 's', 'p', '*', 'h', 'H', 'D', 'd', 'P', 'X'])
 	plot_style = color * linestyle * marker
 	return plot_style
 
