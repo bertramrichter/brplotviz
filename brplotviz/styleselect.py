@@ -50,3 +50,5 @@ def get_plot_style_hatch():
 	plot_style = concat(mono_fill, mono_hatches)
 	return plot_style
 
+if __name__ == "__main__":
+	pass

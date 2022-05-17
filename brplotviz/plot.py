@@ -14,7 +14,7 @@ def single_line(x_values: list, y_values: list, record_name: str = None, *args, 
 	This function plots a single line graph. It's just a wrapper around \ref mixed_graphs().
 	\param x_values List of floats for the x-axis values. Will be wrapped for \ref mixed_graphs(): `[x_values]` &rarr; `x_table`.
 	\param y_values List of floats for the y-axis values. Will be wrapped for \ref mixed_graphs(): `[y_values]` &rarr; `y_table`.
-	\param record_name Will be passed to to the `record_names`. in \ref mixed_graphs().
+	\param record_name Will be passed to to the `record_names` in \ref mixed_graphs().
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
 	"""
@@ -27,7 +27,7 @@ def single_scatter(x_values: list, y_values: list, record_name: str = None, *arg
 	This function plots a single scatter graph. It's just a wrapper around \ref mixed_graphs().
 	\param x_values List of floats for the x-axis values. Will be wrapped for \ref mixed_graphs(): `[x_values]` &rarr; `x_table`.
 	\param y_values List of floats for the y-axis values. Will be wrapped for \ref mixed_graphs(): `[y_values]` &rarr; `y_table`.
-	\param record_name Will be passed to to the `record_names`. in \ref mixed_graphs().
+	\param record_name Will be passed to to the `record_names` in \ref mixed_graphs().
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
 	"""
@@ -44,7 +44,7 @@ def multi_line(x_table, y_table, record_names, *args, **kwargs):
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
 	"""
-	assert len(x_table) == len(y_table) == record_names
+	assert len(x_table) == len(y_table) == len(record_names)
 	record_list = list(zip(x_table, y_table, record_names, ["line"]*len(x_table)))
 	mixed_graphs(record_list, *args, **kwargs)
 
@@ -57,7 +57,7 @@ def multi_scatter(x_table, y_table, record_names, *args, **kwargs):
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
 	"""
-	assert len(x_table) == len(y_table) == record_names
+	assert len(x_table) == len(y_table) == len(record_names)
 	record_list = list(zip(x_table, y_table, record_names, ["scatter"]*len(x_table)))
 	mixed_graphs(record_list, *args, **kwargs)
 
@@ -139,19 +139,19 @@ def bar_variable(bins: list, y_values: tuple):
 	show_save_fig(fig)
 
 def bar_categories(record_list: list,
-					xlabel: str = None,
-					ylabel: str = None,
 					category_names: list = None,
 					record_names: list = None,
+					xlabel: str = None,
+					ylabel: str = None,
 					show_legend: bool = None,
 					file: str = None):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
-	\param xlabel Description of the x-axis. Defaults to `None`.
-	\param ylabel Description of the y-axis. Defaults to `None`.
 	\param category_names Names of data classes. e.g. ["a", "b", "c"]. This corresponds to record_list column names.
 	\param record_names Names of the record_list rows (records).
+	\param xlabel Description of the x-axis. Defaults to `None`.
+	\param ylabel Description of the y-axis. Defaults to `None`.
 		\todo Default to no legend, if set to `None`.
 	\param show_legend Switch, whether the legend should be shown.
 		Defaults to `None`, which will show a legend, if `record_names is not None`.
