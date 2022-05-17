@@ -116,7 +116,7 @@ def bar_variable(bins: list, y_values: tuple):
 	"""
 	Plots a bar plot with a variable number of bins.
 	\todo Is it really necessary to be able use a variable number of bars per bin?
-	\param bins Names of data classes. e.g. ["a", "b", "c"]
+	\param bins Names of data classes e.g. `["a", "b", "c"]`.
 	\param y_values List of lists. For each entry in `classes` there should be list of y_values. e.g. [[1],[2,3],[4,5,6,7]]
 		They are grouped around symmetrically around the position of the class location.
 	"""
@@ -148,11 +148,10 @@ def bar_categories(record_list: list,
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
-	\param category_names Names of data classes. e.g. ["a", "b", "c"]. This corresponds to record_list column names.
+	\param category_names Names of data classes e.g. `["a", "b", "c"]`. This corresponds to record_list column names.
 	\param record_names Names of the record_list rows (records).
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
-		\todo Default to no legend, if set to `None`.
 	\param show_legend Switch, whether the legend should be shown.
 		Defaults to `None`, which will show a legend, if `record_names is not None`.
 		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
