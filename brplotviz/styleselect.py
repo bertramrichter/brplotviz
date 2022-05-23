@@ -7,19 +7,14 @@
 from cycler import cycler, concat
 from matplotlib import pyplot as plt
 
-def set_custom_style(style: dict) -> None:
-	"""
-	This function copies the entries of the given dictionary to the `matplotlib` configuration.
-	"""
-	for entry in style:
-		plt.rcParams[entry] = style[entry]
-
-def set_plot_style_fig():
+def set_plot_style_fig(**pltsettings):
 	"""
 	Set the general style for the background and grid.
+	\param **pltsettings Dictionary of settings to be passed to `plt.rcParams`.
 	"""
-	plt.rcParams['svg.fonttype'] = 'none'
-	plt.rcParams['font.size'] = '10'
+	settings = {"svg.fonttype": "none", "font.size": 10}
+	settings.update(pltsettings)
+	plt.rcParams.update(settings)
 
 def get_plot_style_line():
 	"""

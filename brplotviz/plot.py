@@ -17,10 +17,11 @@ def single_line(x_values: list, y_values: list, record_name: str = None, *args, 
 	\param record_name Will be passed to to the `record_names` in \ref mixed_graphs().
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	if record_name is None:
 		kwargs["show_legend"] = False
-	mixed_graphs([(x_values, y_values, record_name, "line")], *args, **kwargs)
+	return mixed_graphs([(x_values, y_values, record_name, "line")], *args, **kwargs)
 
 def single_scatter(x_values: list, y_values: list, record_name: str = None, *args, **kwargs):
 	"""
@@ -33,7 +34,7 @@ def single_scatter(x_values: list, y_values: list, record_name: str = None, *arg
 	"""
 	if record_name is None:
 		kwargs["show_legend"] = False
-	mixed_graphs([(x_values, y_values, record_name, "scatter")], *args, **kwargs)
+	return mixed_graphs([(x_values, y_values, record_name, "scatter")], *args, **kwargs)
 
 def multi_line(x_table, y_table, record_names, *args, **kwargs):
 	"""
@@ -43,10 +44,11 @@ def multi_line(x_table, y_table, record_names, *args, **kwargs):
 	\param record_names List with the names of the table rows (records).
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	assert len(x_table) == len(y_table) == len(record_names)
 	record_list = list(zip(x_table, y_table, record_names, ["line"]*len(x_table)))
-	mixed_graphs(record_list, *args, **kwargs)
+	return mixed_graphs(record_list, *args, **kwargs)
 
 def multi_scatter(x_table, y_table, record_names, *args, **kwargs):
 	"""
@@ -56,10 +58,11 @@ def multi_scatter(x_table, y_table, record_names, *args, **kwargs):
 	\param record_names List with the names of the table rows (records).
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	assert len(x_table) == len(y_table) == len(record_names)
 	record_list = list(zip(x_table, y_table, record_names, ["scatter"]*len(x_table)))
-	mixed_graphs(record_list, *args, **kwargs)
+	return mixed_graphs(record_list, *args, **kwargs)
 
 def mixed_graphs(record_list: list,
 					xlabel: str = None,
@@ -67,7 +70,9 @@ def mixed_graphs(record_list: list,
 					tick_pos: list = None,
 					tick_labels: list = None,
 					show_legend: bool = True,
-					file: str = None):
+					closeafter: bool = True,
+					file: str = None,
+					pltsettings: dict = None):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
 	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <record_name>, <style>)`.
@@ -84,11 +89,15 @@ def mixed_graphs(record_list: list,
 	\param tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
+	\param closeafter See \ref show_save_fig().
 	\param file See \ref show_save_fig().
+	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
+	pltsettings = pltsettings if pltsettings is not None else {}
 	#show_legend = show_legend if show_legend is not None else (record_names is not None)
 	#record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
-	fig, ax = get_figure()
+	fig, ax = get_figure(**pltsettings)
 	# Get the plot styles
 	line_style = styleselect.get_plot_style_line()()		# a cycler is returned, the second () turns the cycler into an iterator
 	scatter_style = styleselect.get_plot_style_scatter()()	# a cycler is returned, the second () turns the cycler into an iterator
@@ -110,17 +119,27 @@ def mixed_graphs(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	show_save_fig(fig, file)
+	show_save_fig(fig, file=file, closeafter=closeafter)
+	return fig, ax
 
-def bar_variable(bins: list, y_values: tuple):
+def bar_variable(bins: list,
+					y_values: tuple,
+					closeafter: bool = True,
+					file: str = None,
+					pltsettings: dict = None):
 	"""
 	Plots a bar plot with a variable number of bins.
 	\todo Is it really necessary to be able use a variable number of bars per bin?
 	\param bins Names of data classes e.g. `["a", "b", "c"]`.
 	\param y_values List of lists. For each entry in `classes` there should be list of y_values. e.g. [[1],[2,3],[4,5,6,7]]
 		They are grouped around symmetrically around the position of the class location.
+	\param closeafter See \ref show_save_fig().
+	\param file See \ref show_save_fig().
+	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
-	fig, ax = get_figure()
+	pltsettings = pltsettings if pltsettings is not None else {}
+	fig, ax = get_figure(**pltsettings)
 	plot_style = styleselect.get_plot_style_hatch()
 	hatch_list = list(plot_style)
 	if len(y_values) > len(hatch_list):
@@ -136,7 +155,8 @@ def bar_variable(bins: list, y_values: tuple):
 			ax.bar(x=pos_x+j*d_x, height=h, width=d_x, **hatch_list[j])
 	ax.set_xticks(ticks=bin_position_list, labels=bins, rotation=45)
 	ax.legend(loc="best")
-	show_save_fig(fig)
+	show_save_fig(fig, file=file,  closeafter=closeafter)
+	return fig, ax
 
 def bar_categories(record_list: list,
 					category_names: list = None,
@@ -144,7 +164,9 @@ def bar_categories(record_list: list,
 					xlabel: str = None,
 					ylabel: str = None,
 					show_legend: bool = None,
-					file: str = None):
+					closeafter: bool = True,
+					file: str = None,
+					pltsettings: dict = None):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
@@ -155,15 +177,19 @@ def bar_categories(record_list: list,
 	\param show_legend Switch, whether the legend should be shown.
 		Defaults to `None`, which will show a legend, if `record_names is not None`.
 		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
+	\param closeafter See \ref show_save_fig().
 	\param file See \ref show_save_fig().
+	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	# Setup: set, if the legend should be shown or not, set default labels for categories and records
+	pltsettings = pltsettings if pltsettings is not None else {}
 	show_legend = show_legend if show_legend is not None else (record_names is not None)
 	category_names = category_names if category_names is not None else [ "Category {}".format(i) for i in range(1, len(record_list[0])+1) ]
 	record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(record_list)+1) ]
 	assert len(record_list) == len(record_names)
 	
-	fig, ax = get_figure()
+	fig, ax = get_figure(**pltsettings)
 	plot_style = styleselect.get_plot_style_hatch()
 	hatch_list = list(plot_style)
 	if len(record_list) > len(hatch_list):
@@ -186,14 +212,16 @@ def bar_categories(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	show_save_fig(fig, file=file)
+	show_save_fig(fig, file=file, closeafter=closeafter)
+	return fig, ax
 
-def get_figure():
+def get_figure(**pltsettings):
 	"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
+	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
 	\return `fig, ax` Figure and Axis object.
 	"""
-	styleselect.set_plot_style_fig()
+	styleselect.set_plot_style_fig(**pltsettings)
 	fig, ax = plt.subplots()
 	ax.grid(True)
 	ax.set_axisbelow(True)
