@@ -26,7 +26,7 @@ def print_table(table: list,
 	\param file Path to the file in which the table is written to. Defaults to `None`, which means the table is printed on screen instead of saved to disk.
 		If a valid path is given, the tables is written to this file. Overwrites the content of the file without further questions.
 	\param formatter Format options. This is flexible with the following options:
-		- `None` (default) No formatting is done and all entries are printed, as Python does by default.
+		- `None` (default): No formatting is done and all entries are printed, as Python does by default.
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
 		- List of format strings: The formatting is assumed to be applicable to all rows.
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
