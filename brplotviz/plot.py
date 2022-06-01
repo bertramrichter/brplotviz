@@ -31,35 +31,42 @@ def single_scatter(x_values: list, y_values: list, record_name: str = None, *arg
 	\param record_name Will be passed to to the `record_names` in \ref mixed_graphs().
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
+	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	if record_name is None:
 		kwargs["show_legend"] = False
 	return mixed_graphs([(x_values, y_values, record_name, "scatter")], *args, **kwargs)
 
-def multi_line(x_table, y_table, record_names, *args, **kwargs):
+def multi_line(x_table, y_table, record_names: list = None, *args, **kwargs):
 	"""
 	This function plots multiple line graphs in a single figure. It's just a wrapper around \ref mixed_graphs().
 	\param x_table List of lists, where each entry (line) is a data record for the x values.
 	\param y_table List of lists, where each entry (line) is a data record for the y values.
-	\param record_names List with the names of the table rows (records).
+	\param record_names List with the names of the table rows (records). If left `None`, no legend is shown.
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
+	if record_names is None:
+		record_names = ["Record {}".format(i) for i in range(len(y_table))]
+		kwargs["show_legend"] = False
 	assert len(x_table) == len(y_table) == len(record_names)
 	record_list = list(zip(x_table, y_table, record_names, ["line"]*len(x_table)))
 	return mixed_graphs(record_list, *args, **kwargs)
 
-def multi_scatter(x_table, y_table, record_names, *args, **kwargs):
+def multi_scatter(x_table, y_table, record_names: list = None, *args, **kwargs):
 	"""
 	This function plots  multiple scatter graphs in a single figure. It's just a wrapper around \ref mixed_graphs().
 	\param x_table List of lists, where each entry (line) is a data record for the x values.
 	\param y_table List of lists, where each entry (line) is a data record for the y values.
-	\param record_names List with the names of the table rows (records).
+	\param record_names List with the names of the table rows (records).  If left `None`, no legend is shown.
 	\param *args Positional arguments, will be passed to \ref mixed_graphs().
 	\param *kwargs Keyword arguments, will be passed to \ref mixed_graphs().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
+	if record_names is None:
+		record_names = ["Record {}".format(i) for i in range(len(y_table))]
+		kwargs["show_legend"] = False
 	assert len(x_table) == len(y_table) == len(record_names)
 	record_list = list(zip(x_table, y_table, record_names, ["scatter"]*len(x_table)))
 	return mixed_graphs(record_list, *args, **kwargs)
