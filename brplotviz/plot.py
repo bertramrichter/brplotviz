@@ -105,18 +105,13 @@ def mixed_graphs(record_list: list,
 	#show_legend = show_legend if show_legend is not None else (record_names is not None)
 	#record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
 	fig, ax = get_figure(**pltsettings)
-	# Get the plot styles
-	line_style = styleselect.get_plot_style_line()()		# a cycler is returned, the second () turns the cycler into an iterator
-	scatter_style = styleselect.get_plot_style_scatter()()	# a cycler is returned, the second () turns the cycler into an iterator
-	#if len(record_list) > len(line_style) or len(record_list) > len(scatter_style):
-	#	warnings.warn("Warning: too many records, some may not be printed")
 	# Draw the mixed_graphs
 	for x_record, y_record, record_name, style in record_list:
 		assert len(x_record) == len(y_record)
 		if style == "line":
-			ax.plot(x_record, y_record, label=record_name, **next(line_style))
+			ax.plot(x_record, y_record, label=record_name, **next(ax.line_style))
 		elif style == "scatter":
-			ax.plot(x_record, y_record, label=record_name, **next(scatter_style))
+			ax.plot(x_record, y_record, label=record_name, **next(ax.scatter_style))
 	# Appearance
 	if tick_pos is not None and tick_labels is not None:
 		ax.set_xticks(ticks=tick_pos, labels=tick_labels, rotation=45)
@@ -151,7 +146,6 @@ def bar_variable(bins: list,
 	hatch_list = list(plot_style)
 	if len(y_values) > len(hatch_list):
 		warnings.warn("Warning: too many records, some will not be printed")
-	#set_custom_style(custom_style)
 	width = .5					# width of the bars
 	bin_position_list = np.arange(len(bins))	# position of the bin centers
 	for bin_pos, y_list in enumerate(bin_position_list, y_values):
@@ -227,11 +221,22 @@ def get_figure(**pltsettings):
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
 	\return `fig, ax` Figure and Axis object.
+	The `ax` object is assigned three additional attributes:
+		- `ax.line_style`: This style is used, when a line plot is done, see \ref single_line(), \ref multi_line() or `style=line` is passed to \ref mixed_graphs().
+		- `ax.scatter_style`: This style is used, when a scatter plot is done, see \ref single_scatter(), \ref multi_scatter() or `style=scatter` is passed to \ref mixed_graphs().
+		- `ax.hatch_style`: This style is used, when a bar plot is done, see \ref bar_categories().
+	
+	If it is desired to add plots afterwards, use the following snippets:
+	- `ax.plot(x, y, label=<name>, **next(ax.line_style))` for a line plot
+	- `ax.plot(x, y, label=<name>, **next(ax.scatter_style))` for a scatter plot
 	"""
 	styleselect.set_plot_style_fig(**pltsettings)
 	fig, ax = plt.subplots()
 	ax.grid(True)
 	ax.set_axisbelow(True)
+	ax.line_style = styleselect.get_plot_style_line()()
+	ax.scatter_style = styleselect.get_plot_style_scatter()()
+	ax.hatch_style = styleselect.get_plot_style_hatch()()
 	fig.set_tight_layout("tight")
 	return fig, ax
 
