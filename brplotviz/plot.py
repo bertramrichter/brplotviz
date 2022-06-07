@@ -77,9 +77,11 @@ def mixed_graphs(record_list: list,
 					tick_pos: list = None,
 					tick_labels: list = None,
 					show_legend: bool = True,
-					closeafter: bool = True,
+					pltsettings: dict = None,
 					file: str = None,
-					pltsettings: dict = None):
+					closeafter: bool = True,
+					show_fig: bool = True,
+					):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
 	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <record_name>, <style>)`.
@@ -121,14 +123,16 @@ def mixed_graphs(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	show_save_fig(fig, file=file, closeafter=closeafter)
+	show_save_fig(fig, file=file, closeafter=closeafter, show_fig=show_fig)
 	return fig, ax
 
 def bar_variable(bins: list,
 					y_values: tuple,
-					closeafter: bool = True,
+					pltsettings: dict = None,
 					file: str = None,
-					pltsettings: dict = None):
+					closeafter: bool = True,
+					show_fig: bool = True,
+					):
 	"""
 	Plots a bar plot with a variable number of bins.
 	\todo Is it really necessary to be able use a variable number of bars per bin?
@@ -156,7 +160,7 @@ def bar_variable(bins: list,
 			ax.bar(x=pos_x+j*d_x, height=h, width=d_x, **hatch_list[j])
 	ax.set_xticks(ticks=bin_position_list, labels=bins, rotation=45)
 	ax.legend(loc="best")
-	show_save_fig(fig, file=file,  closeafter=closeafter)
+	show_save_fig(fig, file=file,  closeafter=closeafter, show_fig=show_fig)
 	return fig, ax
 
 def bar_categories(record_list: list,
@@ -165,9 +169,11 @@ def bar_categories(record_list: list,
 					xlabel: str = None,
 					ylabel: str = None,
 					show_legend: bool = None,
-					closeafter: bool = True,
+					pltsettings: dict = None,
 					file: str = None,
-					pltsettings: dict = None):
+					closeafter: bool = True,
+					show_fig: bool = True,
+					):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
@@ -191,20 +197,16 @@ def bar_categories(record_list: list,
 	assert len(record_list) == len(record_names)
 	
 	fig, ax = get_figure(**pltsettings)
-	plot_style = styleselect.get_plot_style_hatch()
-	hatch_list = list(plot_style)
-	if len(record_list) > len(hatch_list):
-		warnings.warn("Warning: too many records, some will not be printed")
 	width = .8					# width of the bars
 	n_bars = len(record_list)
 	d_x = width/n_bars
 	bin_position_list = np.arange(len(category_names))	# position of the bin centers
-	for i, (heights, record_name, hatch_pattern) in enumerate(zip(record_list, record_names, hatch_list)):
+	for i, (heights, record_name) in enumerate(zip(record_list, record_names)):
 		assert len(heights) == len(category_names)
 		# Sanitize None entries
 		heights = [entry if entry is not None else 0 for entry in heights]
 		pos_x = bin_position_list - width/2 + d_x/2 + i*d_x
-		ax.bar(x=pos_x, height=heights, width=d_x, label=record_name, **hatch_pattern)
+		ax.bar(x=pos_x, height=heights, width=d_x, label=record_name, **next(ax.hatch_style))
 	# Appearance
 	ax.set_xticks(ticks=bin_position_list, labels=category_names, rotation=90)
 	if xlabel is not None:
@@ -213,7 +215,7 @@ def bar_categories(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	show_save_fig(fig, file=file, closeafter=closeafter)
+	show_save_fig(fig, file=file, closeafter=closeafter, show_fig=show_fig)
 	return fig, ax
 
 def get_figure(**pltsettings):
@@ -240,22 +242,27 @@ def get_figure(**pltsettings):
 	fig.set_tight_layout("tight")
 	return fig, ax
 
-def show_save_fig(fig, file: str = None, closeafter: bool = True):
+def show_save_fig(fig,
+					file: str = None,
+					closeafter: bool = True,
+					show_fig: bool = True,
+					):
 	"""
 	Shows or saves the figure.
 	\param fig Figure to be shown or saved.
 	\param file Path to the file in which the graph is saved. Defaults to `None`, which means the graph is shown on screen instead of saved to disk.
 		If a valid path is given, the graph is saved to this file. Overwrites the content of the file without further questions.
+	\param show Switch, whether the figure should be shown. Defaults to `True`.
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
-	if file is None:
+	if file is not None:
+		try: fig.savefig(file)
+		except: print('Failed to save plot to file "{}"'.format(file))
+	if show_fig:
 		# use `plt.show()` for staying open figure_handling the window is closed. It manages the event loop, which `fig.show()` does not.
 		# `fig.show()` does not block and closes imediately, if not in an interactive mode.
 		# For more, see https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.show  
 		plt.show(block=True)
-	else:
-		try: fig.savefig(file)
-		except: print('Failed to save plot to file "{}"'.format(file))
 	# close the current figure, cleans the memory.
 	if closeafter:
 		plt.close(fig)
