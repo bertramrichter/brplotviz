@@ -98,9 +98,10 @@ def mixed_graphs(record_list: list,
 	\param tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
-	\param closeafter See \ref show_save_fig().
-	\param file See \ref show_save_fig().
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param file See \ref show_save_fig().
+	\param show_fig See \ref show_save_fig().
+	\param closeafter See \ref show_save_fig().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	pltsettings = pltsettings if pltsettings is not None else {}
@@ -139,9 +140,10 @@ def bar_variable(bins: list,
 	\param bins Names of data classes e.g. `["a", "b", "c"]`.
 	\param y_values List of lists. For each entry in `classes` there should be list of y_values. e.g. [[1],[2,3],[4,5,6,7]]
 		They are grouped around symmetrically around the position of the class location.
-	\param closeafter See \ref show_save_fig().
-	\param file See \ref show_save_fig().
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param file See \ref show_save_fig().
+	\param show_fig See \ref show_save_fig().
+	\param closeafter See \ref show_save_fig().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	pltsettings = pltsettings if pltsettings is not None else {}
@@ -171,8 +173,8 @@ def bar_categories(record_list: list,
 					show_legend: bool = None,
 					pltsettings: dict = None,
 					file: str = None,
-					closeafter: bool = True,
 					show_fig: bool = True,
+					closeafter: bool = True,
 					):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
@@ -184,9 +186,10 @@ def bar_categories(record_list: list,
 	\param show_legend Switch, whether the legend should be shown.
 		Defaults to `None`, which will show a legend, if `record_names is not None`.
 		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
-	\param closeafter See \ref show_save_fig().
-	\param file See \ref show_save_fig().
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param file See \ref show_save_fig().
+	\param show_fig See \ref show_save_fig().
+	\param closeafter See \ref show_save_fig().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	# Setup: set, if the legend should be shown or not, set default labels for categories and records
@@ -244,15 +247,15 @@ def get_figure(**pltsettings):
 
 def show_save_fig(fig,
 					file: str = None,
-					closeafter: bool = True,
 					show_fig: bool = True,
+					closeafter: bool = True,
 					):
 	"""
 	Shows or saves the figure.
 	\param fig Figure to be shown or saved.
 	\param file Path to the file in which the graph is saved. Defaults to `None`, which means the graph is shown on screen instead of saved to disk.
 		If a valid path is given, the graph is saved to this file. Overwrites the content of the file without further questions.
-	\param show Switch, whether the figure should be shown. Defaults to `True`.
+	\param show_fig Switch, whether the figure should be shown. Defaults to `True`.
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
 	if file is not None:

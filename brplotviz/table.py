@@ -56,8 +56,7 @@ def print_table(table: list,
 	if title is not None:
 		formatted_lines.append("{}".format(title))
 	if head_row is not None:
-		formatted_line = "{}".format(top_left)
-		formatted_line += "{}".format(itemsep)
+		formatted_line = "{}{}".format(top_left, itemsep) if head_col is not None else ""
 		for col_num, item in enumerate(head_row):
 			formatted_line += "{}".format(item)
 			if col_num == len(head_row)-1:
