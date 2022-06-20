@@ -50,7 +50,8 @@ def multi_line(x_table, y_table, record_names: list = None, *args, **kwargs):
 	if record_names is None:
 		record_names = ["Record {}".format(i) for i in range(len(y_table))]
 		kwargs["show_legend"] = False
-	assert len(x_table) == len(y_table) == len(record_names)
+	if not (len(x_table) == len(y_table) == len(record_names)):
+			raise ValueError("Number of x-records ({}) != Number of y-records ({}) != Number of record names ({})".format(len(x_table), len(y_table), len(record_names)))
 	record_list = list(zip(x_table, y_table, record_names, ["line"]*len(x_table)))
 	return mixed_graphs(record_list, *args, **kwargs)
 
@@ -67,7 +68,8 @@ def multi_scatter(x_table, y_table, record_names: list = None, *args, **kwargs):
 	if record_names is None:
 		record_names = ["Record {}".format(i) for i in range(len(y_table))]
 		kwargs["show_legend"] = False
-	assert len(x_table) == len(y_table) == len(record_names)
+	if not (len(x_table) == len(y_table) == len(record_names)):
+			raise ValueError("Number of x-records ({}) != Number of y-records ({}) != Number of record names ({})".format(len(x_table), len(y_table), len(record_names)))
 	record_list = list(zip(x_table, y_table, record_names, ["scatter"]*len(x_table)))
 	return mixed_graphs(record_list, *args, **kwargs)
 
@@ -109,8 +111,9 @@ def mixed_graphs(record_list: list,
 	#record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
 	fig, ax = get_figure(**pltsettings)
 	# Draw the mixed_graphs
-	for x_record, y_record, record_name, style in record_list:
-		assert len(x_record) == len(y_record)
+	for i, (x_record, y_record, record_name, style) in enumerate(record_list):
+		if len(x_record) != len(y_record):
+			raise ValueError("Number of x-data ({}) != Number of y-data ({}) for record {}".format(len(x_record), len(y_record), i))
 		if style == "line":
 			ax.plot(x_record, y_record, label=record_name, **next(ax.line_style))
 		elif style == "scatter":
@@ -197,7 +200,8 @@ def bar_categories(record_list: list,
 	show_legend = show_legend if show_legend is not None else (record_names is not None)
 	category_names = category_names if category_names is not None else [ "Category {}".format(i) for i in range(1, len(record_list[0])+1) ]
 	record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(record_list)+1) ]
-	assert len(record_list) == len(record_names)
+	if len(record_list) != len(record_names):
+			raise ValueError("Number of records ({}) != Number of record names ({})".format(len(record_list), len(record_names)))
 	
 	fig, ax = get_figure(**pltsettings)
 	width = .8					# width of the bars
@@ -205,7 +209,8 @@ def bar_categories(record_list: list,
 	d_x = width/n_bars
 	bin_position_list = np.arange(len(category_names))	# position of the bin centers
 	for i, (heights, record_name) in enumerate(zip(record_list, record_names)):
-		assert len(heights) == len(category_names)
+		if len(heights) != len(category_names):
+			raise ValueError("Number of y-values ({}) != Number of category names ({})".format(len(heights), len(category_names)))
 		# Sanitize None entries
 		heights = [entry if entry is not None else 0 for entry in heights]
 		pos_x = bin_position_list - width/2 + d_x/2 + i*d_x
