@@ -156,14 +156,14 @@ def bar_variable(bins: list,
 	if len(y_values) > len(hatch_list):
 		warnings.warn("Warning: too many records, some will not be printed")
 	width = .5					# width of the bars
-	bin_position_list = np.arange(len(bins))	# position of the bin centers
-	for bin_pos, y_list in enumerate(bin_position_list, y_values):
+	bin_position_array = np.arange(len(bins))	# position of the bin centers
+	for bin_pos, y_list in enumerate(bin_position_array, y_values):
 		n_bars = len(y_list)
 		d_x = width/n_bars
 		pos_x = bin_pos - width/2 + d_x/2
 		for j, h in enumerate(y_list):
 			ax.bar(x=pos_x+j*d_x, height=h, width=d_x, **hatch_list[j])
-	ax.set_xticks(ticks=bin_position_list, labels=bins, rotation=45)
+	ax.set_xticks(ticks=bin_position_array, labels=bins, rotation=45)
 	ax.legend(loc="best")
 	show_save_fig(fig, file=file,  closeafter=closeafter, show_fig=show_fig)
 	return fig, ax
@@ -207,16 +207,18 @@ def bar_categories(record_list: list,
 	width = .8					# width of the bars
 	n_bars = len(record_list)
 	d_x = width/n_bars
-	bin_position_list = np.arange(len(category_names))	# position of the bin centers
+	bin_position_array = np.arange(len(category_names))	# position of the bin centers
+	bin_separation_array = bin_position_array[:-1] + 0.5
 	for i, (heights, record_name) in enumerate(zip(record_list, record_names)):
 		if len(heights) != len(category_names):
-			raise ValueError("Number of y-values ({}) != Number of category names ({})".format(len(heights), len(category_names)))
+			raise ValueError("Number of y-values ({}) != Number of category names ({}) for record {}".format(len(heights), len(category_names), i))
 		# Sanitize None entries
 		heights = [entry if entry is not None else 0 for entry in heights]
-		pos_x = bin_position_list - width/2 + d_x/2 + i*d_x
+		pos_x = bin_position_array - width/2 + d_x/2 + i*d_x
 		ax.bar(x=pos_x, height=heights, width=d_x, label=record_name, **next(ax.hatch_style))
 	# Appearance
-	ax.set_xticks(ticks=bin_position_list, labels=category_names, rotation=90)
+	ax.set_xticks(ticks=bin_separation_array, labels=[""]*len(bin_separation_array), minor=False)
+	ax.set_xticks(ticks=bin_position_array, labels=category_names, rotation=90, minor=True)
 	if xlabel is not None:
 		ax.set_xlabel(xlabel)
 	if ylabel is not None:
