@@ -84,7 +84,7 @@ def mixed_graphs(record_list: list,
 					file: str = None,
 					closeafter: bool = True,
 					show_fig: bool = True,
-					):
+					*args, **kwargs):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
 	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <record_name>, <style>)`.
@@ -105,6 +105,8 @@ def mixed_graphs(record_list: list,
 	\param file See \ref show_save_fig().
 	\param show_fig See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
+	\param *args Positional arguments, will be ignored.
+	\param *kwargs Keyword arguments, will be ignored.
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	pltsettings = pltsettings if pltsettings is not None else {}
@@ -179,7 +181,7 @@ def bar_categories(record_list: list,
 					file: str = None,
 					show_fig: bool = True,
 					closeafter: bool = True,
-					):
+					*args, **kwargs):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
@@ -194,6 +196,8 @@ def bar_categories(record_list: list,
 	\param file See \ref show_save_fig().
 	\param show_fig See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
+	\param *args Positional arguments, will be ignored.
+	\param *kwargs Keyword arguments, will be ignored.
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	# Setup: set, if the legend should be shown or not, set default labels for categories and records

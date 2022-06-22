@@ -17,8 +17,8 @@ def print_table(table: list,
 					formatter = None,
 					head_sep: str = None,
 					file: str = None,
-					show: bool = None
-					) -> list:
+					show: bool = None,
+					*args, **kwargs) -> list:
 	"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
@@ -38,6 +38,8 @@ def print_table(table: list,
 	\param file Path to the file in which the table is written to. Defaults to `None`, which means the table is printed on screen instead of saved to disk.
 		If a valid path is given, the tables is written to this file. Overwrites the content of the file without further questions.
 	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
+	\param *args Positional arguments, will be ignored.
+	\param *kwargs Keyword arguments, will be ignored.
 	
 	The layout with both `head_row` and `head_col` specified will be:
 	| `top_left`	| `head_row 0`	| `head_row 1`	|
