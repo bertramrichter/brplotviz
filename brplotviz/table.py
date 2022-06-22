@@ -13,6 +13,7 @@ def print_table(table: list,
 					title: str  = None,
 					file: str = None,
 					formatter = None,
+					head_sep: str = None,
 					):
 	"""
 	Prints the table in a nice format.
@@ -30,6 +31,8 @@ def print_table(table: list,
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
 		- List of format strings: The formatting is assumed to be applicable to all rows.
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
+	\param head_sep If not `None` (default), this is put on an additional line between the head_row and the body of the table.
+		This has only an effect, if `head_row` is not `None` aswell.
 	
 	The layout with both `head_row` and `head_col` specified will be:
 	| `top_left`	| `head_row 0`	| `head_row 1`	|
@@ -51,10 +54,11 @@ def print_table(table: list,
 	"""
 	# Get the formatter table
 	format_table = _get_formatter_table(formatter, table)
-	# Format table head
 	formatted_lines = []
+	# Print title
 	if title is not None:
 		formatted_lines.append("{}".format(title))
+	# Format table head
 	if head_row is not None:
 		formatted_line = "{}{}".format(top_left, itemsep) if head_col is not None else ""
 		for col_num, item in enumerate(head_row):
@@ -64,6 +68,9 @@ def print_table(table: list,
 			else:
 				formatted_line += "{}".format(itemsep)
 		formatted_lines.append(formatted_line)
+		# Optionally add a head separation
+		if head_sep is not None:
+			formatted_lines.append("".format(head_sep))
 	# Format table body
 	for row_num, (row, row_format) in enumerate(zip(table, format_table)):
 		formatted_line = ""
