@@ -129,11 +129,19 @@ def print_table_LaTeX(table: list,
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
 	
-	To use the generated table, add the following code to yout preamble:
+	To use the generated table, add the following code to your preamble:
 	```
 	\newcommand{\thf}[1]{\multicolumn{1}{c}{#1}}		% top row format
 	\newcommand{\thfl}[1]{\multicolumn{1}{@{}l}{#1}}	% top row format, left most column
 	\newcommand{\thfr}[1]{\multicolumn{1}{c@{}}{#1}}	% top row format, right most column
+	```
+	If specifies the formatting of the cells in the header row for the whole document.
+	To actually print the table, use the following code snippet:
+	```
+	\begin{table}[hbtp]
+	\centering
+	% <copy table content here> or \input{<filename>}
+	\end{table}
 	```
 	"""
 	# Preparation of 
