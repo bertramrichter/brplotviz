@@ -5,6 +5,8 @@
 ## \date 2022
 ## \package table \copydoc table.py
 
+import codecs
+
 def print_table(table: list,
 					head_row: list = None,
 					head_col: list = None,
@@ -90,9 +92,9 @@ def print_table(table: list,
 		formatted_lines.append(formatted_line)
 	# Output
 	if file is not None:
-		with open(file, "w") as f:
+		with codecs.open(file, "w", "utf-8") as f:
 			for line in formatted_lines:
-				f.writelines(line + "\n")
+				f.write(line + "\n")
 	if show:
 		for line in formatted_lines:
 			print(line)
@@ -183,9 +185,9 @@ def print_table_LaTeX(table: list,
 	formatted_table.append(r"\label{" + "{}".format(LaTeX_label) + r"}")
 	# Output
 	if file is not None:
-		with open(file, "w") as f:
+		with codecs.open(file, "w", "utf-8") as f:
 			for line in formatted_table:
-				f.writelines(line + "\n")
+				f.write(line + "\n")
 	if show:
 		for line in formatted_table:
 			print(line)
