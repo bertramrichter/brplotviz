@@ -2,6 +2,7 @@
 ## \file
 ## Contains functions for plotting.
 ## \author Bertram Richter
+## \date 2022
 ## \package plot \copydoc plot.py
 
 from matplotlib import pyplot as plt
