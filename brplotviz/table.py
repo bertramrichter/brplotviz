@@ -3,7 +3,7 @@
 ## Contains table printing functionalities.
 ## \author Bertram Richter
 ## \date 2022
-## \package table \copydoc table.py
+## \package brplotviz.table \copydoc table.py
 
 import codecs
 

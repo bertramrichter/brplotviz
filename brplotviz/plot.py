@@ -3,11 +3,13 @@
 ## Contains functions for plotting.
 ## \author Bertram Richter
 ## \date 2022
-## \package plot \copydoc plot.py
+## \package brplotviz.plot \copydoc plot.py
+
+import warnings
 
 from matplotlib import pyplot as plt
 import numpy as np
-import warnings
+
 import styleselect
 
 def single_line(x_values: list, y_values: list, record_name: str = None, *args, **kwargs):
