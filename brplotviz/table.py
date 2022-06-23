@@ -184,7 +184,7 @@ def print_table_LaTeX(table: list,
 	formatted_table.append(r"\bottomrule")
 	formatted_table.append(r"\end{tabular}")
 	formatted_table.append(r"\caption{" + "{}".format(LaTeX_caption) + r"}")
-	formatted_table.append(r"\label{" + "{}".format(LaTeX_label) + r"}")
+	formatted_table.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	# Output
 	if file is not None:
 		with codecs.open(file, "w", "utf-8") as f:
