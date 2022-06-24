@@ -5,6 +5,7 @@
 ## \date 2022
 ## \package brplotviz.plot \copydoc plot.py
 
+import os
 import warnings
 
 from matplotlib import pyplot as plt
@@ -273,8 +274,12 @@ def show_save_fig(fig,
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
 	if file is not None:
-		try: fig.savefig(file)
-		except: print('Failed to save plot to file "{}"'.format(file))
+		try:
+			if not os.path.exists(os.path.dirname(file)):
+				os.makedirs(os.path.dirname(file))
+			fig.savefig(file)
+		except:
+			print('Failed to save plot to file "{}"'.format(file))
 	if show_fig:
 		# use `plt.show()` for staying open figure_handling the window is closed. It manages the event loop, which `fig.show()` does not.
 		# `fig.show()` does not block and closes imediately, if not in an interactive mode.

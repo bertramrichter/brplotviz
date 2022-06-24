@@ -6,6 +6,7 @@
 ## \package brplotviz.table \copydoc table.py
 
 import codecs
+import os
 
 def print_table(table: list,
 					head_row: list = None,
@@ -94,6 +95,8 @@ def print_table(table: list,
 		formatted_lines.append(formatted_line)
 	# Output
 	if file is not None:
+		if not os.path.exists(os.path.dirname(file)):
+			os.makedirs(os.path.dirname(file))
 		with codecs.open(file, "w", "utf-8") as f:
 			for line in formatted_lines:
 				f.write(line + "\n")
@@ -154,9 +157,15 @@ def print_table_LaTeX(table: list,
 	if head_row is not None:
 		if head_col is not None:
 			top_left = "\\thfl{"+"{}".format(top_left)+r"}"
-			head_row = ["\\thf{"+"{}".format(head_row[0])+r"}"] + ["\\thf{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
+			if len(head_row) > 1:
+				head_row = ["\\thf{"+"{}".format(head_row[0])+r"}"] + ["\\thf{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
+			else:
+				head_row = ["\\thfr{"+"{}".format(head_row[0])+r"}"]
 		else:
-			head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"] + ["\\thf{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
+			if len(head_row) > 1:
+				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"] + ["\\thf{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
+			else:
+				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"]
 	# Preamble
 	formatted_table = []
 	formatted_table.append(r"\begin{tabular}{@{}")
@@ -187,6 +196,8 @@ def print_table_LaTeX(table: list,
 	formatted_table.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	# Output
 	if file is not None:
+		if not os.path.exists(os.path.dirname(file)):
+			os.makedirs(os.path.dirname(file))
 		with codecs.open(file, "w", "utf-8") as f:
 			for line in formatted_table:
 				f.write(line + "\n")
