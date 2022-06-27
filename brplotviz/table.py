@@ -168,6 +168,8 @@ def print_table_LaTeX(table: list,
 				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"]
 	# Preamble
 	formatted_table = []
+	formatted_table.append(r"\caption{" + "{}".format(LaTeX_caption) + r"}")
+	formatted_table.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	formatted_table.append(r"\begin{tabular}{@{}")
 	if head_col is not None:
 		formatted_table.append(r"*{1}{l}")
@@ -192,8 +194,6 @@ def print_table_LaTeX(table: list,
 	# Postamble
 	formatted_table.append(r"\bottomrule")
 	formatted_table.append(r"\end{tabular}")
-	formatted_table.append(r"\caption{" + "{}".format(LaTeX_caption) + r"}")
-	formatted_table.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	# Output
 	if file is not None:
 		if not os.path.exists(os.path.dirname(file)):
