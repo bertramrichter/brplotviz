@@ -86,7 +86,7 @@ def mixed_graphs(record_list: list,
 					pltsettings: dict = None,
 					file: str = None,
 					closeafter: bool = True,
-					show_fig: bool = True,
+					show: bool = True,
 					*args, **kwargs):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
@@ -106,7 +106,7 @@ def mixed_graphs(record_list: list,
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
 	\param file See \ref show_save_fig().
-	\param show_fig See \ref show_save_fig().
+	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
@@ -133,7 +133,7 @@ def mixed_graphs(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	show_save_fig(fig, file=file, closeafter=closeafter, show_fig=show_fig)
+	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
 	return fig, ax
 
 def bar_variable(bins: list,
@@ -141,7 +141,7 @@ def bar_variable(bins: list,
 					pltsettings: dict = None,
 					file: str = None,
 					closeafter: bool = True,
-					show_fig: bool = True,
+					show: bool = True,
 					):
 	"""
 	Plots a bar plot with a variable number of bins.
@@ -151,7 +151,7 @@ def bar_variable(bins: list,
 		They are grouped around symmetrically around the position of the class location.
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
 	\param file See \ref show_save_fig().
-	\param show_fig See \ref show_save_fig().
+	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
@@ -171,7 +171,7 @@ def bar_variable(bins: list,
 			ax.bar(x=pos_x+j*d_x, height=h, width=d_x, **hatch_list[j])
 	ax.set_xticks(ticks=bin_position_array, labels=bins, rotation=45)
 	ax.legend(loc="best")
-	show_save_fig(fig, file=file,  closeafter=closeafter, show_fig=show_fig)
+	show_save_fig(fig, file=file,  closeafter=closeafter, show=show)
 	return fig, ax
 
 def bar_categories(record_list: list,
@@ -182,7 +182,7 @@ def bar_categories(record_list: list,
 					show_legend: bool = None,
 					pltsettings: dict = None,
 					file: str = None,
-					show_fig: bool = True,
+					show: bool = True,
 					closeafter: bool = True,
 					*args, **kwargs):
 	"""
@@ -197,7 +197,7 @@ def bar_categories(record_list: list,
 		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
 	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
 	\param file See \ref show_save_fig().
-	\param show_fig See \ref show_save_fig().
+	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
@@ -233,7 +233,7 @@ def bar_categories(record_list: list,
 		ax.set_ylabel(ylabel)
 	if show_legend:
 		ax.legend(loc="best")
-	show_save_fig(fig, file=file, closeafter=closeafter, show_fig=show_fig)
+	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
 	return fig, ax
 
 def get_figure(**pltsettings):
@@ -262,7 +262,7 @@ def get_figure(**pltsettings):
 
 def show_save_fig(fig,
 					file: str = None,
-					show_fig: bool = True,
+					show: bool = True,
 					closeafter: bool = True,
 					):
 	"""
@@ -270,7 +270,7 @@ def show_save_fig(fig,
 	\param fig Figure to be shown or saved.
 	\param file Path to the file in which the graph is saved. Defaults to `None`, which means the graph is shown on screen instead of saved to disk.
 		If a valid path is given, the graph is saved to this file. Overwrites the content of the file without further questions.
-	\param show_fig Switch, whether the figure should be shown. Defaults to `True`.
+	\param show Switch, whether the figure should be shown. Defaults to `True`.
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
 	if file is not None:
@@ -280,7 +280,7 @@ def show_save_fig(fig,
 			fig.savefig(file)
 		except:
 			print('Failed to save plot to file "{}"'.format(file))
-	if show_fig:
+	if show:
 		# use `plt.show()` for staying open figure_handling the window is closed. It manages the event loop, which `fig.show()` does not.
 		# `fig.show()` does not block and closes imediately, if not in an interactive mode.
 		# For more, see https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.show  
