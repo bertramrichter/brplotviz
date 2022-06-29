@@ -138,8 +138,8 @@ def print_table_LaTeX(table: list,
 	
 	To use the generated table, add the following code to your preamble:
 	```
-	\newcommand{\thf}[1]{\multicolumn{1}{c}{#1}}		% top row format
 	\newcommand{\thfl}[1]{\multicolumn{1}{@{}l}{#1}}	% top row format, left most column
+	\newcommand{\thfm}[1]{\multicolumn{1}{c}{#1}}		% top row format, middle coloumn
 	\newcommand{\thfr}[1]{\multicolumn{1}{c@{}}{#1}}	% top row format, right most column
 	```
 	If specifies the formatting of the cells in the header row for the whole document.
@@ -158,12 +158,12 @@ def print_table_LaTeX(table: list,
 		if head_col is not None:
 			top_left = "\\thfl{"+"{}".format(top_left)+r"}"
 			if len(head_row) > 1:
-				head_row = ["\\thf{"+"{}".format(head_row[0])+r"}"] + ["\\thf{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
+				head_row = ["\\thfm{"+"{}".format(head_row[0])+r"}"] + ["\\thfm{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
 			else:
 				head_row = ["\\thfr{"+"{}".format(head_row[0])+r"}"]
 		else:
 			if len(head_row) > 1:
-				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"] + ["\\thf{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
+				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"] + ["\\thfm{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
 			else:
 				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"]
 	# Preamble
