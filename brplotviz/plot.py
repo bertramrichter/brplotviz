@@ -227,6 +227,7 @@ def bar_categories(record_list: list,
 	# Appearance
 	ax.set_xticks(ticks=bin_separation_array, labels=[""]*len(bin_separation_array), minor=False)
 	ax.set_xticks(ticks=bin_position_array, labels=category_names, rotation=90, minor=True)
+	ax.set_xlim(bin_separation_array[0]-1, bin_separation_array[-1]+1)
 	if xlabel is not None:
 		ax.set_xlabel(xlabel)
 	if ylabel is not None:
