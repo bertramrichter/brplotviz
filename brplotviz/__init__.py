@@ -4,3 +4,6 @@
 ## Contains functionalities for simplified plotting on a monochrome palette and printing of tables.
 ## \author Bertram Richter
 ## \date 2022
+
+import plot
+import table
