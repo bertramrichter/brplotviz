@@ -25,7 +25,7 @@ def single_line(x_values: list, y_values: list, record_name: str = None, *args, 
 	"""
 	if record_name is None:
 		kwargs["show_legend"] = False
-	return mixed_graphs([(x_values, y_values, record_name, "line")], *args, **kwargs)
+	return multi_line([x_values], [y_values], [record_name], *args, **kwargs)
 
 def single_scatter(x_values: list, y_values: list, record_name: str = None, *args, **kwargs):
 	"""
@@ -39,7 +39,7 @@ def single_scatter(x_values: list, y_values: list, record_name: str = None, *arg
 	"""
 	if record_name is None:
 		kwargs["show_legend"] = False
-	return mixed_graphs([(x_values, y_values, record_name, "scatter")], *args, **kwargs)
+	return multi_scatter([x_values], [y_values], [record_name], *args, **kwargs)
 
 def multi_line(x_table, y_table, record_names: list = None, *args, **kwargs):
 	"""
@@ -56,7 +56,9 @@ def multi_line(x_table, y_table, record_names: list = None, *args, **kwargs):
 		kwargs["show_legend"] = False
 	if not (len(x_table) == len(y_table) == len(record_names)):
 			raise ValueError("Number of x-records ({}) != Number of y-records ({}) != Number of record names ({})".format(len(x_table), len(y_table), len(record_names)))
-	record_list = list(zip(x_table, y_table, record_names, ["line"]*len(x_table)))
+	record_list = []
+	for x, y, name in zip(x_table, y_table, record_names):
+		record_list.append((x, y, "line", {"label": name}))
 	return mixed_graphs(record_list, *args, **kwargs)
 
 def multi_scatter(x_table, y_table, record_names: list = None, *args, **kwargs):
@@ -74,7 +76,9 @@ def multi_scatter(x_table, y_table, record_names: list = None, *args, **kwargs):
 		kwargs["show_legend"] = False
 	if not (len(x_table) == len(y_table) == len(record_names)):
 			raise ValueError("Number of x-records ({}) != Number of y-records ({}) != Number of record names ({})".format(len(x_table), len(y_table), len(record_names)))
-	record_list = list(zip(x_table, y_table, record_names, ["scatter"]*len(x_table)))
+	record_list = []
+	for x, y, name in zip(x_table, y_table, record_names):
+		record_list.append((x, y, "scatter", {"label": name}))
 	return mixed_graphs(record_list, *args, **kwargs)
 
 def mixed_graphs(record_list: list,
