@@ -8,13 +8,13 @@
 from cycler import cycler, concat
 from matplotlib import pyplot as plt
 
-def set_plot_style_fig(**pltsettings):
+def set_plot_style_fig(**pltrcParams):
 	"""
 	Set the general style for the background and grid.
-	\param **pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param **pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	"""
-	settings = {"svg.fonttype": "none", "font.size": 10}
-	settings.update(pltsettings)
+	settings = {"svg.fonttype": "none", "font.size": 10, "axes.grid": True, "axes.axisbelow": True}
+	settings.update(pltrcParams)
 	plt.rcParams.update(settings)
 
 def get_plot_style_line():

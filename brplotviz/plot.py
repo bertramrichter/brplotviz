@@ -83,20 +83,22 @@ def mixed_graphs(record_list: list,
 					tick_pos: list = None,
 					tick_labels: list = None,
 					show_legend: bool = True,
-					pltsettings: dict = None,
+					pltrcParams: dict = None,
 					file: str = None,
 					closeafter: bool = True,
 					show: bool = True,
+					fig = None,
+					ax = None,
 					*args, **kwargs):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
-	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <record_name>, <style>)`.
+	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <style>, <pltsettings>)`.
 		- `x_values`: List of x-axis values.
 		- `y_values`: List of y-axis values.
-		- `record_name`: Name of the record. Is used in the legend.
 		- `style`: Specifies, how the record should be shown. Available options are:
-			- `"plot"` Generates a line plot.
-			- `"scatter"` Generates a scatter plot.
+			- `"plot"`: Generates a line plot.
+			- `"scatter"`: Generates a scatter plot.
+		- `pltsettings` Dictionary which is passed to `ax.plot()` and override the default values.
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
 	\param tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
@@ -104,7 +106,7 @@ def mixed_graphs(record_list: list,
 	\param tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
-	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	\param file See \ref show_save_fig().
 	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
@@ -112,18 +114,22 @@ def mixed_graphs(record_list: list,
 	\param *kwargs Keyword arguments, will be ignored.
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
-	pltsettings = pltsettings if pltsettings is not None else {}
+	pltrcParams = pltrcParams if pltrcParams is not None else {}
 	#show_legend = show_legend if show_legend is not None else (record_names is not None)
 	#record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
-	fig, ax = get_figure(**pltsettings)
+	fig, ax = get_figure(fig, ax, **pltrcParams)
 	# Draw the mixed_graphs
-	for i, (x_record, y_record, record_name, style) in enumerate(record_list):
+	for i, (x_record, y_record, style, pltsettings) in enumerate(record_list):
 		if len(x_record) != len(y_record):
 			raise ValueError("Number of x-data ({}) != Number of y-data ({}) for record {}".format(len(x_record), len(y_record), i))
 		if style == "line":
-			ax.plot(x_record, y_record, label=record_name, **next(ax.line_style))
+			settings = next(ax.line_style)
 		elif style == "scatter":
-			ax.plot(x_record, y_record, label=record_name, **next(ax.scatter_style))
+			settings = next(ax.scatter_style)
+		else:
+			raise ValueError("Option '{}' is not known for plotting in record {}.".format(style, i))
+		settings.update(pltsettings)
+		ax.plot(x_record, y_record, **settings)
 	# Appearance
 	if tick_pos is not None and tick_labels is not None:
 		ax.set_xticks(ticks=tick_pos, labels=tick_labels, rotation=45)
@@ -138,10 +144,12 @@ def mixed_graphs(record_list: list,
 
 def bar_variable(bins: list,
 					y_values: tuple,
-					pltsettings: dict = None,
+					pltrcParams: dict = None,
 					file: str = None,
 					closeafter: bool = True,
 					show: bool = True,
+					fig = None,
+					ax = None,
 					):
 	"""
 	Plots a bar plot with a variable number of bins.
@@ -149,14 +157,14 @@ def bar_variable(bins: list,
 	\param bins Names of data classes e.g. `["a", "b", "c"]`.
 	\param y_values List of lists. For each entry in `classes` there should be list of y_values. e.g. [[1],[2,3],[4,5,6,7]]
 		They are grouped around symmetrically around the position of the class location.
-	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	\param file See \ref show_save_fig().
 	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
-	pltsettings = pltsettings if pltsettings is not None else {}
-	fig, ax = get_figure(**pltsettings)
+	pltrcParams = pltrcParams if pltrcParams is not None else {}
+	fig, ax = get_figure(fig, ax, **pltrcParams)
 	plot_style = styleselect.get_plot_style_hatch()
 	hatch_list = list(plot_style)
 	if len(y_values) > len(hatch_list):
@@ -180,10 +188,12 @@ def bar_categories(record_list: list,
 					xlabel: str = None,
 					ylabel: str = None,
 					show_legend: bool = None,
-					pltsettings: dict = None,
+					pltrcParams: dict = None,
 					file: str = None,
 					show: bool = True,
 					closeafter: bool = True,
+					fig = None,
+					ax = None,
 					*args, **kwargs):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
@@ -195,7 +205,7 @@ def bar_categories(record_list: list,
 	\param show_legend Switch, whether the legend should be shown.
 		Defaults to `None`, which will show a legend, if `record_names is not None`.
 		Thus, if both `show_legend` and `record_names` are unspecified, no legend is shown.
-	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	\param file See \ref show_save_fig().
 	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
@@ -204,14 +214,14 @@ def bar_categories(record_list: list,
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	# Setup: set, if the legend should be shown or not, set default labels for categories and records
-	pltsettings = pltsettings if pltsettings is not None else {}
+	pltrcParams = pltrcParams if pltrcParams is not None else {}
 	show_legend = show_legend if show_legend is not None else (record_names is not None)
 	category_names = category_names if category_names is not None else [ "Category {}".format(i) for i in range(1, len(record_list[0])+1) ]
 	record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(record_list)+1) ]
 	if len(record_list) != len(record_names):
 			raise ValueError("Number of records ({}) != Number of record names ({})".format(len(record_list), len(record_names)))
 	
-	fig, ax = get_figure(**pltsettings)
+	fig, ax = get_figure(fig, ax, **pltrcParams)
 	width = .8					# width of the bars
 	n_bars = len(record_list)
 	d_x = width/n_bars
@@ -237,10 +247,10 @@ def bar_categories(record_list: list,
 	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
 	return fig, ax
 
-def get_figure(**pltsettings):
+def get_figure(fig, ax, **pltrcParams):
 	"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
-	\param pltsettings Dictionary of settings to be passed to `plt.rcParams`.
+	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	\return `fig, ax` Figure and Axis object.
 	The `ax` object is assigned three additional attributes:
 		- `ax.line_style`: This style is used, when a line plot is done, see \ref single_line(), \ref multi_line() or `style=line` is passed to \ref mixed_graphs().
@@ -251,8 +261,9 @@ def get_figure(**pltsettings):
 	- `ax.plot(x, y, label=<name>, **next(ax.line_style))` for a line plot
 	- `ax.plot(x, y, label=<name>, **next(ax.scatter_style))` for a scatter plot
 	"""
-	styleselect.set_plot_style_fig(**pltsettings)
-	fig, ax = plt.subplots()
+	styleselect.set_plot_style_fig(**pltrcParams)
+	if fig is None or ax is None:
+		fig, ax = plt.subplots()
 	ax.grid(True)
 	ax.set_axisbelow(True)
 	ax.line_style = styleselect.get_plot_style_line()()
