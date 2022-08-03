@@ -88,6 +88,7 @@ def mixed_graphs(record_list: list,
 					tick_labels: list = None,
 					show_legend: bool = True,
 					pltrcParams: dict = None,
+					pltsettings: dict = None,
 					file: str = None,
 					closeafter: bool = True,
 					show: bool = True,
@@ -96,13 +97,13 @@ def mixed_graphs(record_list: list,
 					*args, **kwargs):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
-	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <style>, <pltsettings>)`.
+	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <style>, <graphsettings>)`.
 		- `x_values`: List of x-axis values.
 		- `y_values`: List of y-axis values.
 		- `style`: Specifies, how the record should be shown. Available options are:
 			- `"plot"`: Generates a line plot.
 			- `"scatter"`: Generates a scatter plot.
-		- `pltsettings` Dictionary which is passed to `ax.plot()` and override the default values.
+		- `graphsettings` Dictionary with settings according to `matplotlib.Axes.ax.plot()`, which will be applied to this specific graph.
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
 	\param tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
@@ -111,19 +112,26 @@ def mixed_graphs(record_list: list,
 		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
 	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
+	\param pltsettings Dictionary of settings that will be applied to every graph in `record_list`.
 	\param file See \ref show_save_fig().
 	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
+	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
+	\param ax `matplotlib.axes.Axes`, if `fig` or `ax` is `None` (default), a fresh one is generated.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
+	
+	The hierarchy in settings is in ascending (latest takes precedence over previous ones): `brplotviz` default style -> `pltrcParams`-> `pltsettings` -> `graphsettings`.
+	
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	pltrcParams = pltrcParams if pltrcParams is not None else {}
-	#show_legend = show_legend if show_legend is not None else (record_names is not None)
-	#record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
+	pltsettings = pltsettings if pltsettings is not None else {}
+	# show_legend = show_legend if show_legend is not None else (record_names is not None)
+	# record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(x_table)+1) ]
 	fig, ax = get_figure(fig, ax, **pltrcParams)
 	# Draw the mixed_graphs
-	for i, (x_record, y_record, style, pltsettings) in enumerate(record_list):
+	for i, (x_record, y_record, style, graphsettings) in enumerate(record_list):
 		if len(x_record) != len(y_record):
 			raise ValueError("Number of x-data ({}) != Number of y-data ({}) for record {}".format(len(x_record), len(y_record), i))
 		if style == "line":
@@ -133,6 +141,7 @@ def mixed_graphs(record_list: list,
 		else:
 			raise ValueError("Option '{}' is not known for plotting in record {}.".format(style, i))
 		settings.update(pltsettings)
+		settings.update(graphsettings)
 		ax.plot(x_record, y_record, **settings)
 	# Appearance
 	if tick_pos is not None and tick_labels is not None:
@@ -165,6 +174,8 @@ def bar_variable(bins: list,
 	\param file See \ref show_save_fig().
 	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
+	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
+	\param ax `matplotlib.axes.Axes`, if `fig` or `ax` is `None` (default), a fresh one is generated.
 	\return Returns the the figure and the axis objects: `fig, ax`.
 	"""
 	pltrcParams = pltrcParams if pltrcParams is not None else {}
@@ -180,10 +191,10 @@ def bar_variable(bins: list,
 		d_x = width/n_bars
 		pos_x = bin_pos - width/2 + d_x/2
 		for j, h in enumerate(y_list):
-			ax.bar(x=pos_x+j*d_x, height=h, width=d_x, **hatch_list[j])
+			ax.bar(x=pos_x + j * d_x, height=h, width=d_x, **hatch_list[j])
 	ax.set_xticks(ticks=bin_position_array, labels=bins, rotation=45)
 	ax.legend(loc="best")
-	show_save_fig(fig, file=file,  closeafter=closeafter, show=show)
+	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
 	return fig, ax
 
 def bar_categories(record_list: list,
@@ -213,6 +224,8 @@ def bar_categories(record_list: list,
 	\param file See \ref show_save_fig().
 	\param show See \ref show_save_fig().
 	\param closeafter See \ref show_save_fig().
+	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
+	\param ax `matplotlib.axes.Axes`, if `fig` or `ax` is `None` (default), a fresh one is generated.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
 	\return Returns the the figure and the axis objects: `fig, ax`.
@@ -220,8 +233,8 @@ def bar_categories(record_list: list,
 	# Setup: set, if the legend should be shown or not, set default labels for categories and records
 	pltrcParams = pltrcParams if pltrcParams is not None else {}
 	show_legend = show_legend if show_legend is not None else (record_names is not None)
-	category_names = category_names if category_names is not None else [ "Category {}".format(i) for i in range(1, len(record_list[0])+1) ]
-	record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(record_list)+1) ]
+	category_names = category_names if category_names is not None else [ "Category {}".format(i) for i in range(1, len(record_list[0]) + 1) ]
+	record_names = record_names if record_names is not None else [ "Record {}".format(i) for i in range(1, len(record_list) + 1) ]
 	if len(record_list) != len(record_names):
 			raise ValueError("Number of records ({}) != Number of record names ({})".format(len(record_list), len(record_names)))
 	
@@ -236,12 +249,12 @@ def bar_categories(record_list: list,
 			raise ValueError("Number of y-values ({}) != Number of category names ({}) for record {}".format(len(heights), len(category_names), i))
 		# Sanitize None entries
 		heights = [entry if entry is not None else 0 for entry in heights]
-		pos_x = bin_position_array - width/2 + d_x/2 + i*d_x
+		pos_x = bin_position_array - width/2 + d_x/2 + i * d_x
 		ax.bar(x=pos_x, height=heights, width=d_x, label=record_name, **next(ax.hatch_style))
 	# Appearance
-	ax.set_xticks(ticks=bin_separation_array, labels=[""]*len(bin_separation_array), minor=False)
+	ax.set_xticks(ticks=bin_separation_array, labels=[""] * len(bin_separation_array), minor=False)
 	ax.set_xticks(ticks=bin_position_array, labels=category_names, rotation=90, minor=True)
-	ax.set_xlim(bin_separation_array[0]-1, bin_separation_array[-1]+1)
+	ax.set_xlim(bin_separation_array[0] - 1, bin_separation_array[-1] + 1)
 	if xlabel is not None:
 		ax.set_xlabel(xlabel)
 	if ylabel is not None:
@@ -254,6 +267,8 @@ def bar_categories(record_list: list,
 def get_figure(fig, ax, **pltrcParams):
 	"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
+	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
+	\param ax `matplotlib.axes.Axes`, if `fig` or `ax` is `None` (default), a fresh one is generated.
 	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	\return `fig, ax` Figure and Axis object.
 	The `ax` object is assigned three additional attributes:
