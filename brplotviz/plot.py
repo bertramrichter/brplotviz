@@ -264,7 +264,7 @@ def bar_categories(record_list: list,
 	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
 	return fig, ax
 
-def get_figure(fig, ax, **pltrcParams):
+def get_figure(fig = None, ax = None, **pltrcParams):
 	"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
 	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
