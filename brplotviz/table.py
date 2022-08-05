@@ -84,6 +84,8 @@ def print_table(table: list,
 	# Format table body
 	for row_num, (row, row_format) in enumerate(zip(table, format_table)):
 		formatted_line = ""
+		if len(row) != len(row_format):
+			raise ValueError("Numbers of entries in data and format do not match: data: {}; format: {}!".format(len(row), len(row_format)))
 		if head_col is not None:
 			formatted_line = "{}{}".format(head_col[row_num], itemsep)
 		for col_num, (entry, entry_format) in enumerate(zip(row, row_format)):
@@ -130,7 +132,9 @@ def print_table_LaTeX(table: list,
 		- List of format strings: The formatting is assumed to be applicable to all rows.
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
 	\param LaTeX_caption Title of the table. Will used as the content of the caption below the table.
-	\param LaTeX_format Column format specification according to the LaTeX specification. Defaults to `"l"` (left-aligned).
+	\param LaTeX_format Column format specification according to the LaTeX specification. This is flexible with the following options:
+		- String: The format is apllied to all data coloumns. By default, ll data columns will be left-aligned, which is equivalent to `"l"`.
+		- List of strings: I is assumed, that each data column has an individual format. Make sure, the number of rows is in sync with the data to avoid compilation errors.
 	\param LaTeX_label LaTeX lable of the table. Will result in: `\caption{<LaTeX_label>}`.
 	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param *args Positional arguments, will be ignored.
@@ -173,8 +177,13 @@ def print_table_LaTeX(table: list,
 	formatted_table.append(r"\begin{tabular}{@{}")
 	if head_col is not None:
 		formatted_table.append(r"*{1}{l}")
-	len(table[0])
-	formatted_table.append(r"*{" + "{}".format(len(table[0])) + "}{" + "{}".format(LaTeX_format) + "}")
+	if isinstance(LaTeX_format, str):
+		formatted_table.append(r"*{" + "{}".format(len(table[0])) + "}{" + "{}".format(LaTeX_format) + "}")
+	elif isinstance(LaTeX_format, (list, tuple)):
+		for col in LaTeX_format:
+			formatted_table.append(r"*{1}{" + "{}".format(col) + "}")
+	else:
+		raise ValueError("LaTeX-format needs to be a str or iterable, not {}".format(type(LaTeX_format)))
 	formatted_table.append(r"@{}}")
 	formatted_table.append(r"\toprule")
 	# Table content
