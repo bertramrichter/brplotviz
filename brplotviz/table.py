@@ -14,7 +14,7 @@ def print_table(table: list,
 					top_left: str = "",
 					itemsep: str = "\t",
 					lineend: str = "",
-					title: str = None,
+					caption: str = None,
 					formatter = None,
 					head_sep: str = None,
 					file: str = None,
@@ -28,7 +28,7 @@ def print_table(table: list,
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
 	\param itemsep String, that is put in-between items of the same line. Defaults to `"\t"`.
 	\param lineend String that is put at the end of the line. Defaults to `""`.
-	\param title Title of the table. Will be printed on a separate line directly above the table, if not `None` (default).
+	\param caption Title of the table. Will be printed on a separate line directly above the table, if not `None` (default).
 	\param formatter Format options. This is flexible with the following options:
 		- `None` (default): No formatting is done and all entries are printed, as Python does by default.
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
@@ -65,9 +65,9 @@ def print_table(table: list,
 	# Get the formatter table
 	format_table = _get_formatter_table(formatter, table)
 	formatted_lines = []
-	# Print title
-	if title is not None:
-		formatted_lines.append("{}".format(title))
+	# Print caption
+	if caption is not None:
+		formatted_lines.append("{}".format(caption))
 	# Format table head
 	if head_row is not None:
 		formatted_line = "{}{}".format(top_left, itemsep) if head_col is not None else ""
@@ -113,9 +113,9 @@ def print_table_LaTeX(table: list,
 					top_left: str = "",
 					file: str = None,
 					formatter = None,
-					LaTeX_caption: str = None,
-					LaTeX_format: str = "l",
+					caption: str = None,
 					LaTeX_label: str = None,
+					LaTeX_format: str = "l",
 					show: bool = None,
 					*args, **kwargs) -> list:
 	"""
@@ -131,11 +131,11 @@ def print_table_LaTeX(table: list,
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
 		- List of format strings: The formatting is assumed to be applicable to all rows.
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
-	\param LaTeX_caption Title of the table. Will used as the content of the caption below the table.
+	\param caption Caption of the table. Will used as the content of LaTeX's `\caption{<caption>}` above the table.
+	\param LaTeX_label LaTeX lable of the table. Will result in: `\label{tab:<LaTeX_label>}`.
 	\param LaTeX_format Column format specification according to the LaTeX specification. This is flexible with the following options:
 		- String: The format is apllied to all data coloumns. By default, ll data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format. Make sure, the number of rows is in sync with the data to avoid compilation errors.
-	\param LaTeX_label LaTeX lable of the table. Will result in: `\caption{<LaTeX_label>}`.
 	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
@@ -172,7 +172,7 @@ def print_table_LaTeX(table: list,
 				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"]
 	# Preamble
 	formatted_table = []
-	formatted_table.append(r"\caption{" + "{}".format(LaTeX_caption) + r"}")
+	formatted_table.append(r"\caption{" + "{}".format(caption) + r"}")
 	formatted_table.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	formatted_table.append(r"\begin{tabular}{@{}")
 	if head_col is not None:
@@ -191,7 +191,7 @@ def print_table_LaTeX(table: list,
 			head_row=head_row,
 			head_col=head_col,
 			top_left=top_left,
-			title=None,
+			caption=None,
 			formatter=formatter,
 			itemsep=" & ",
 			lineend=" \\\\",
