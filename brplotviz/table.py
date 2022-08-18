@@ -17,6 +17,7 @@ def print_table(table: list,
 					caption: str = None,
 					formatter = None,
 					head_sep: str = None,
+					transpose_data: bool = False,
 					file: str = None,
 					show: bool = None,
 					*args, **kwargs) -> list:
@@ -36,6 +37,8 @@ def print_table(table: list,
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
 	\param head_sep If not `None` (default), this is put on an additional line between the head_row and the body of the table.
 		This has only an effect, if `head_row` is not `None` aswell.
+	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting. Defaults to `False`.
+		Note, that `head_row` and `head_col` will not be swapped.
 	\param file Path to the file in which the table is written to. Defaults to `None`, which means the table is printed on screen instead of saved to disk.
 		If a valid path is given, the tables is written to this file. Overwrites the content of the file without further questions.
 	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
@@ -62,6 +65,8 @@ def print_table(table: list,
 	"""
 	# Default to show only, if file is None,
 	show = show if show is not None else (file is None)
+	if transpose_data:
+		table = _transpose_data(table)
 	# Get the formatter table
 	format_table = _get_formatter_table(formatter, table)
 	formatted_lines = []
@@ -116,6 +121,7 @@ def print_table_LaTeX(table: list,
 					caption: str = None,
 					LaTeX_label: str = None,
 					LaTeX_format: str = "l",
+					transpose_data: bool = False,
 					show: bool = None,
 					*args, **kwargs) -> list:
 	"""
@@ -136,6 +142,8 @@ def print_table_LaTeX(table: list,
 	\param LaTeX_format Column format specification according to the LaTeX specification. This is flexible with the following options:
 		- String: The format is apllied to all data coloumns. By default, ll data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format. Make sure, the number of rows is in sync with the data to avoid compilation errors.
+	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting. Defaults to `False`.
+		Note, that `head_row` and `head_col` will not be swapped.
 	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
@@ -198,6 +206,7 @@ def print_table_LaTeX(table: list,
 			head_sep="\\midrule",
 			file=None,
 			show=False,
+			transpose_data=transpose_data,
 			)
 	formatted_table.extend(content)
 	# Postamble
@@ -240,6 +249,13 @@ def _get_formatter_table(formatter, table):
 		return [[formatter]*len(row) for row in table]
 	else:
 		raise ValueError("Please provide a string with a Format Specification Mini-Language!")
+
+def _transpose_data(table: list):
+	"""
+	Transposes the given table.
+	Columns will become rows and rows will become columns.
+	"""	
+	return list(map(list, zip(*table)))
 
 if __name__ == "__main__":
 	pass
