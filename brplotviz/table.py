@@ -121,6 +121,8 @@ def print_table_LaTeX(table: list,
 					caption: str = None,
 					LaTeX_label: str = None,
 					LaTeX_format: str = "l",
+					table_head: str = None,
+					table_notes: str = None,
 					transpose_data: bool = False,
 					show: bool = None,
 					*args, **kwargs) -> list:
@@ -142,6 +144,11 @@ def print_table_LaTeX(table: list,
 	\param LaTeX_format Column format specification according to the LaTeX specification. This is flexible with the following options:
 		- String: The format is apllied to all data coloumns. By default, ll data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format. Make sure, the number of rows is in sync with the data to avoid compilation errors.
+	\param table_head This option can be used to add content between the `\toprule` and `head_row`, e.g. for multi-line table heads.
+		Defaults to `None`, which means no effect.
+	\param table_notes This option can be used to add content between the `\end{tabular}` and `\end{table}`, e.g. for additional notes, which should be included in the float.
+		This content is set left-aligned.
+		Defaults to `None`, which means no effect.
 	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting. Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
 	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
@@ -194,6 +201,9 @@ def print_table_LaTeX(table: list,
 		raise ValueError("LaTeX-format needs to be a str or iterable, not {}".format(type(LaTeX_format)))
 	formatted_table.append(r"@{}}")
 	formatted_table.append(r"\toprule")
+	# Add optional head
+	if table_head is not None:
+		formatted_table.append(table_head)
 	# Table content
 	content = print_table(table=table,
 			head_row=head_row,
@@ -201,9 +211,9 @@ def print_table_LaTeX(table: list,
 			top_left=top_left,
 			caption=None,
 			formatter=formatter,
-			itemsep=" & ",
-			lineend=" \\\\",
-			head_sep="\\midrule",
+			itemsep=r" & ",
+			lineend=r" \\",
+			head_sep=r"\midrule",
 			file=None,
 			show=False,
 			transpose_data=transpose_data,
@@ -211,6 +221,9 @@ def print_table_LaTeX(table: list,
 	formatted_table.extend(content)
 	# Postamble
 	formatted_table.append(r"\bottomrule")
+	# Add optional table notes
+	if table_notes is not None:
+		formatted_table.append(r"{\raggedright " + table_notes + r"\par}")
 	formatted_table.append(r"\end{tabular}")
 	# Output
 	if file is not None:
