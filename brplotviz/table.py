@@ -9,27 +9,37 @@ import codecs
 import os
 
 def print_table(table: list,
-					head_row: list = None,
 					head_col: list = None,
+					head_row: list = None,
 					top_left: str = "",
+					align = "l",
+					caption: str = None,
 					itemsep: str = "\t",
 					lineend: str = "",
-					caption: str = None,
+					file: str = None,
 					formatter = None,
 					head_sep: str = None,
-					transpose_data: bool = False,
-					file: str = None,
 					show: bool = None,
+					transpose_data: bool = False,
 					*args, **kwargs) -> list:
 	"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
-	\param head_row List of column heads, if specified, printed before the rest of the table.
 	\param head_col This is put infront of the rows, if not left `None` (default).
+	\param head_row List of column heads, if specified, printed before the rest of the table.
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
+	\param align Specifies the alignment options of the columns. Available options:
+		- `"l"` (default): All columns are left-aligned.
+		- `"c"`: All columns are centered.
+		- `"r"`: All columns are right-aligned.
+		- `None`: No alignment of columns is done.
+		- List of afforementioned options: Each column can have it's own alignment.
+			An alignment for `head_col` needs to be included as well, if `head_col` is provided.
+	\param caption Title of the table. Will be printed on a separate line directly above the table, if not `None` (default).
 	\param itemsep String, that is put in-between items of the same line. Defaults to `"\t"`.
 	\param lineend String that is put at the end of the line. Defaults to `""`.
-	\param caption Title of the table. Will be printed on a separate line directly above the table, if not `None` (default).
+	\param file Path to the file in which the table is written to. Defaults to `None`, which means the table is printed on screen instead of saved to disk.
+		If a valid path is given, the tables is written to this file. Overwrites the content of the file without further questions.
 	\param formatter Format options. This is flexible with the following options:
 		- `None` (default): No formatting is done and all entries are printed, as Python does by default.
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
@@ -37,11 +47,9 @@ def print_table(table: list,
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
 	\param head_sep If not `None` (default), this is put on an additional line between the head_row and the body of the table.
 		This has only an effect, if `head_row` is not `None` aswell.
+	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting. Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
-	\param file Path to the file in which the table is written to. Defaults to `None`, which means the table is printed on screen instead of saved to disk.
-		If a valid path is given, the tables is written to this file. Overwrites the content of the file without further questions.
-	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
 	
@@ -67,70 +75,48 @@ def print_table(table: list,
 	show = show if show is not None else (file is None)
 	if transpose_data:
 		table = _transpose_data(table)
-	# Get the formatter table
-	format_table = _get_formatter_table(formatter, table)
-	formatted_lines = []
-	# Print caption
+	table = _apply_format(table, formatter)
+	table = _include_head(table, head_row, head_col, top_left)
+	if align is not None:
+		table = _align(table, align)
+	formatted_lines = _typeset_lines(table, itemsep, lineend)
+	if head_row is not None and head_sep is not None:
+		formatted_lines.insert(1, "{}".format(head_sep))
 	if caption is not None:
-		formatted_lines.append("{}".format(caption))
-	# Format table head
-	if head_row is not None:
-		formatted_line = "{}{}".format(top_left, itemsep) if head_col is not None else ""
-		for col_num, item in enumerate(head_row):
-			formatted_line += "{}".format(item)
-			if col_num == len(head_row)-1:
-				formatted_line += "{}".format(lineend)
-			else:
-				formatted_line += "{}".format(itemsep)
-		formatted_lines.append(formatted_line)
-		# Optionally add a head separation
-		if head_sep is not None:
-			formatted_lines.append(head_sep)
-	# Format table body
-	for row_num, (row, row_format) in enumerate(zip(table, format_table)):
-		formatted_line = ""
-		if len(row) != len(row_format):
-			raise ValueError("Numbers of entries in data and format do not match: data: {}; format: {}!".format(len(row), len(row_format)))
-		if head_col is not None:
-			formatted_line = "{}{}".format(head_col[row_num], itemsep)
-		for col_num, (entry, entry_format) in enumerate(zip(row, row_format)):
-			formatted_line += "{}".format("{"+entry_format+"}").format(entry)
-			if col_num == len(row)-1:
-				formatted_line += "{}".format(lineend)
-			else:
-				formatted_line += "{}".format(itemsep)
-		formatted_lines.append(formatted_line)
+		formatted_lines.insert(0, "{}".format(caption))
 	# Output
-	if file is not None:
-		if not os.path.exists(os.path.dirname(file)):
-			os.makedirs(os.path.dirname(file))
-		with codecs.open(file, "w", "utf-8") as f:
-			for line in formatted_lines:
-				f.write(line + "\n")
-	if show:
-		for line in formatted_lines:
-			print(line)
+	_output_table(formatted_lines, file, show)
 	return formatted_lines
 
 def print_table_LaTeX(table: list,
 					head_row: list = None,
 					head_col: list = None,
 					top_left: str = "",
+					align = "l",
+					caption: str = None,
 					file: str = None,
 					formatter = None,
-					caption: str = None,
 					LaTeX_label: str = None,
 					LaTeX_format: str = "l",
+					show: bool = None,
 					table_head: str = None,
 					transpose_data: bool = False,
-					show: bool = None,
 					*args, **kwargs) -> list:
 	"""
 	Prints the table in a LaTeX format, and it can be copied or input directly into a TeX file.
+	This is a convenience wrapper around \ref prtin_table().
 	\param table List of lists (array-like, but can have different data types).
 	\param head_row List of column heads, if specified, printed before the rest of the table.
 	\param head_col This is put infront of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
+	\param align Specifies the alignment options of the columns. Available options:
+		- `"l"` (default): All columns are left-aligned.
+		- `"c"`: All columns are centered.
+		- `"r"`: All columns are right-aligned.
+		- `None`: No alignment of columns is done.
+		- List of afforementioned options: Each column can have it's own alignment.
+			An alignment for `head_col` needs to be included as well, if `head_col` is provided.
+	\param caption Caption of the table. Will used as the content of LaTeX's `\caption{<caption>}` above the table.
 	\param file Path to the file in which the table is written to. Defaults to `None`, which means the table is printed on screen instead of saved to disk.
 		If a valid path is given, the tables is written to this file. Overwrites the content of the file without further questions.
 	\param formatter Format options. This is flexible with the following options:
@@ -138,24 +124,23 @@ def print_table_LaTeX(table: list,
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
 		- List of format strings: The formatting is assumed to be applicable to all rows.
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
-	\param caption Caption of the table. Will used as the content of LaTeX's `\caption{<caption>}` above the table.
 	\param LaTeX_label LaTeX lable of the table. Will result in: `\label{tab:<LaTeX_label>}`.
 	\param LaTeX_format Column format specification according to the LaTeX specification. This is flexible with the following options:
 		- String: The format is apllied to all data coloumns. By default, ll data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format. Make sure, the number of rows is in sync with the data to avoid compilation errors.
+	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param table_head This option can be used to add content between the `\toprule` and `head_row`, e.g. for multi-line table heads.
 		Defaults to `None`, which means no effect.
 	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting. Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
-	\param show Switch, whether the formatted table should be printed to the default output. If set to `None` (default), it is shown, if `file is None`.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
 	
 	To use the generated table, add the following code to your preamble:
 	```
-	\newcommand{\thfl}[1]{\multicolumn{1}{@{}l}{#1}}	% top row format, left most column
-	\newcommand{\thfm}[1]{\multicolumn{1}{c}{#1}}		% top row format, middle column
-	\newcommand{\thfr}[1]{\multicolumn{1}{c@{}}{#1}}	% top row format, right most column
+	\newcommand{\thfl}[1]{\multicolumn{1}{@{}l}{#1}}	% table head format, left most column
+	\newcommand{\thfm}[1]{\multicolumn{1}{c}{#1}}		% table head format, middle column
+	\newcommand{\thfr}[1]{\multicolumn{1}{c@{}}{#1}}	% table head format, right most column
 	```
 	If specifies the formatting of the cells in the header row for the whole document.
 	To actually print the table, use the following code snippet:
@@ -166,43 +151,38 @@ def print_table_LaTeX(table: list,
 	\end{table}
 	```
 	"""
-	# Preparation of 
+	# Preparation
 	show = show if show is not None else (file is None)
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
 	if head_row is not None:
-		if head_col is not None:
-			top_left = "\\thfl{"+"{}".format(top_left)+r"}"
-			if len(head_row) > 1:
-				head_row = ["\\thfm{"+"{}".format(head_row[0])+r"}"] + ["\\thfm{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
-			else:
-				head_row = ["\\thfr{"+"{}".format(head_row[0])+r"}"]
-		else:
-			if len(head_row) > 1:
-				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"] + ["\\thfm{"+"{}".format(entry)+r"}" for entry in head_row[1:-1]] + ["\\thfr{"+"{}".format(head_row[-1])+r"}"]
-			else:
-				head_row = ["\\thfl{"+"{}".format(head_row[0])+r"}"]
+		top_left = r"\thfl{"+"{}".format(top_left)+r"}"
+		head_row_format = [r"\thfm{"+"{}".format(entry)+r"}" for entry in head_row]
+		if head_col is None:
+			head_row_format[0] = r"\thfl{"+"{}".format(head_row[0])+r"}"
+		head_row_format[-1] = r"\thfr{"+"{}".format(head_row[-1])+r"}"
 	# Preamble
-	formatted_table = []
-	formatted_table.append(r"\caption{" + "{}".format(caption) + r"}")
-	formatted_table.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
-	formatted_table.append(r"\begin{tabular}{@{}")
+	formatted_lines = []
+	formatted_lines.append(r"\caption{" + "{}".format(caption) + r"}")
+	formatted_lines.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
+	formatted_lines.append(r"\begin{tabular}{@{}")
 	if head_col is not None:
-		formatted_table.append(r"*{1}{l}")
+		formatted_lines.append(r"*{1}{l}")
 	if isinstance(LaTeX_format, str):
-		formatted_table.append(r"*{" + "{}".format(len(table[0])) + "}{" + "{}".format(LaTeX_format) + "}")
+		formatted_lines.append(r"*{" + "{}".format(len(table[0])) + "}{" + "{}".format(LaTeX_format) + "}")
 	elif isinstance(LaTeX_format, (list, tuple)):
 		for col in LaTeX_format:
-			formatted_table.append(r"*{1}{" + "{}".format(col) + "}")
+			formatted_lines.append(r"*{1}{" + "{}".format(col) + "}")
 	else:
 		raise ValueError("LaTeX-format needs to be a str or iterable, not {}".format(type(LaTeX_format)))
-	formatted_table.append(r"@{}}")
-	formatted_table.append(r"\toprule")
+	formatted_lines.append(r"@{}}")
+	formatted_lines.append(r"\toprule")
 	# Add optional head
 	if table_head is not None:
-		formatted_table.append(table_head)
+		formatted_lines.append(table_head)
 	# Table content
 	content = print_table(table=table,
-			head_row=head_row,
+			align=align,
+			head_row=head_row_format,
 			head_col=head_col,
 			top_left=top_left,
 			caption=None,
@@ -214,23 +194,65 @@ def print_table_LaTeX(table: list,
 			show=False,
 			transpose_data=transpose_data,
 			)
-	formatted_table.extend(content)
+	formatted_lines.extend(content)
 	# Postamble
-	formatted_table.append(r"\bottomrule")
-	formatted_table.append(r"\end{tabular}")
+	formatted_lines.append(r"\bottomrule")
+	formatted_lines.append(r"\end{tabular}")
 	# Output
-	if file is not None:
-		if not os.path.exists(os.path.dirname(file)):
-			os.makedirs(os.path.dirname(file))
-		with codecs.open(file, "w", "utf-8") as f:
-			for line in formatted_table:
-				f.write(line + "\n")
-	if show:
-		for line in formatted_table:
-			print(line)
-	return formatted_table
+	_output_table(formatted_lines, file, show)
+	return formatted_lines
 
-def _get_formatter_table(formatter, table):
+def _apply_format(table, formatter):
+	"""
+	Converts the entries of the given table into `str`.
+	\param table Table with the original content to be converted.
+	\param formatter Format option, see \ref _get_formatter_table().
+	\return Returns a table of the same dimensions sasdf
+	"""
+	formatter_table = _get_formatter_table(table, formatter)
+	str_table = []
+	for format_row, row in zip(formatter_table, table):
+		str_row = []
+		for format_entry, entry in zip(format_row, row):
+			str_row.append("{}".format("{"+format_entry+"}").format(entry))
+		str_table.append(str_row)
+	return str_table
+
+def _align(table, align):
+	"""
+	\todo Implement and Document
+	"""
+	
+	col_width = _find_col_width(table)
+	alignment = _get_alignment(table, align)
+	#pad_template  = "{" + pad[align] + str(width) + "}".format(entry)
+	aligned = [
+		[("{:" + align + str(width) + "}").format(str(entry)) for align, entry, width in zip(alignment, row, col_width)
+		] for row in table
+		]
+	return aligned
+
+def _find_col_width(table):
+	"""
+	\todo Implement and Document
+	"""
+	col_list = _transpose_data(table)
+	width = [max([len(entry) for entry in col]) for col in col_list]
+	return width
+
+def _get_alignment(table, align):
+	"""
+	\todo Implement and Document
+	"""
+	align_dict = {"l": "<", "c": "^", "r": ">"}
+	if isinstance(align, str):
+		return [align_dict[align]]*max([len(row) for row in table])
+	elif isinstance(align,list):
+		return [align_dict[col] for col in align]
+	else:
+		raise ValueError("Wrong alignment type.")
+
+def _get_formatter_table(table, formatter):
 	"""
 	Get the table of formatting strings.
 	\param formatter Format options. This is flexible with the following options:
@@ -256,12 +278,48 @@ def _get_formatter_table(formatter, table):
 	else:
 		raise ValueError("Please provide a string with a Format Specification Mini-Language!")
 
+def _include_head(table, head_row, head_col, top_left):
+	"""
+	\todo Implement and Document
+	"""
+	if head_col is not None:
+		table = _transpose_data(table)
+		table.insert(0, [str(entry) for entry in head_col])
+		table = _transpose_data(table)
+		
+	if head_row is not None:
+		if head_col is not None:
+			table.insert(0, [str(top_left)] + [str(entry) for entry in head_row])
+		else:
+			table.insert(0, [str(entry) for entry in head_row])
+	return table
+
+def _output_table(formatted_lines, file, show):
+	"""
+	\todo Implement and Document
+	"""
+	if file is not None:
+		if not os.path.exists(os.path.dirname(file)):
+			os.makedirs(os.path.dirname(file))
+		with codecs.open(file, "w", "utf-8") as f:
+			for line in formatted_lines:
+				f.write(line + "\n")
+	if show:
+		for line in formatted_lines:
+			print(line)
+
 def _transpose_data(table: list):
 	"""
 	Transposes the given table.
 	Columns will become rows and rows will become columns.
 	"""	
 	return list(map(list, zip(*table)))
+
+def _typeset_lines(table, itemsep, lineend):
+	"""
+	\todo Implement and Document
+	"""
+	return [itemsep.join(row) + lineend for row in table]
 
 if __name__ == "__main__":
 	pass
