@@ -174,6 +174,7 @@ def print_table_LaTeX(table: list,
 		if head_col is None:
 			head_row_format[0] = r"\thfl{"+"{}".format(head_row[0])+r"}"
 		head_row_format[-1] = r"\thfr{"+"{}".format(head_row[-1])+r"}"
+		head_row = head_row_format
 	# Preamble
 	formatted_lines = []
 	formatted_lines.append(r"\caption{" + "{}".format(caption) + r"}")
@@ -196,7 +197,7 @@ def print_table_LaTeX(table: list,
 	# Table content
 	content = print_table(table=table,
 			align=align,
-			head_row=head_row_format,
+			head_row=head_row,
 			head_col=head_col,
 			top_left=top_left,
 			caption=None,
