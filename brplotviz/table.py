@@ -167,6 +167,8 @@ def print_table_LaTeX(table: list,
 	```
 	"""
 	# Preparation
+	if transpose_data:
+		table = _transpose_data(table)
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
 	if head_row is not None:
 		top_left = r"\thfl{"+"{}".format(top_left)+r"}"
@@ -207,7 +209,7 @@ def print_table_LaTeX(table: list,
 			head_sep=r"\midrule",
 			file=None,
 			show=False,
-			transpose_data=transpose_data,
+			transpose_data=False,
 			)
 	formatted_lines.extend(content)
 	# Postamble
