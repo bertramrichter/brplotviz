@@ -305,6 +305,7 @@ def show_save_fig(fig,
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
 	if file is not None:
+		file = os.path.join(os.getcwd(), file)
 		try:
 			if not os.path.exists(os.path.dirname(file)):
 				os.makedirs(os.path.dirname(file))

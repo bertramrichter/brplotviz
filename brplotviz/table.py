@@ -330,11 +330,15 @@ def _output_table(formatted_lines, file, show):
 	"""
 	show = show if show is not None else (file is None)
 	if file is not None:
-		if not os.path.exists(os.path.dirname(file)):
-			os.makedirs(os.path.dirname(file))
-		with codecs.open(file, "w", "utf-8") as f:
-			for line in formatted_lines:
-				f.write(line + "\n")
+		file = os.path.join(os.getcwd(), file)
+		try:
+			if not os.path.exists(os.path.dirname(file)):
+				os.makedirs(os.path.dirname(file))
+			with codecs.open(file, "w", "utf-8") as f:
+				for line in formatted_lines:
+					f.write(line + "\n")
+		except:
+			print('Failed to save table to file "{}"'.format(file))
 	if show:
 		for line in formatted_lines:
 			print(line)
