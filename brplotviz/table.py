@@ -19,6 +19,7 @@ def print_table(table: list,
 					file: str = None,
 					formatter = None,
 					head_sep: str = None,
+					replacement: tuple = None,
 					show: bool = None,
 					transpose_data: bool = False,
 					*args, **kwargs) -> list:
@@ -51,6 +52,11 @@ def print_table(table: list,
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
 	\param head_sep If not `None` (default), this is put on an additional line between the head_row and the body of the table.
 		This has only an effect, if `head_row` is not `None` aswell.
+	\param replacement Tuple like `<source>, <target>`, where `<source>` is an iterable of value, that should be replaced by `<target>`.
+		Example: `(("0", "nan"), "")` will clear all cells, that contain zero or `NaN`.
+		Defaults to `None` (no replacement is attempted).
+		If activated, the replacement in carried out after converting the cells to `str`, but before alignment.
+		If you want to replace (raw) content before the formatting, use \ref replace() before passing the table to \ref print_table().
 	\param show Switch, whether the formatted table should be printed to the default output.
 		If set to `None` (default), it is shown, if `file is None`.
 	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting.
@@ -81,6 +87,8 @@ def print_table(table: list,
 	if transpose_data:
 		table = _transpose_data(table)
 	table = _apply_format(table, formatter)
+	if replacement is not None:
+		table = replace(table, *replacement)
 	table = _include_head(table, head_row, head_col, top_left)
 	if align is not None:
 		table = _align(table, align)
@@ -104,6 +112,7 @@ def print_table_LaTeX(table: list,
 					LaTeX_label: str = None,
 					LaTeX_format: str = "l",
 					show: bool = None,
+					replacement: tuple = None,
 					table_head: str = None,
 					transpose_data: bool = False,
 					*args, **kwargs) -> list:
@@ -141,6 +150,11 @@ def print_table_LaTeX(table: list,
 			By default, all data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format.
 			Make sure, the number of rows is in sync with the data to avoid compilation errors.
+	\param replacement Tuple like `<source>, <target>`, where `<source>` is an iterable of value, that should be replaced by `<target>`.
+		Example: `(("0", "nan"), "")` will clear all cells, that contain zero or `NaN`.
+		Defaults to `None` (no replacement is attempted).
+		If activated, the replacement in carried out after converting the cells to `str`, but before alignment.
+		If you want to replace (raw) content before the formatting, use \ref replace() before passing the table to \ref print_table().
 	\param show Switch, whether the formatted table should be printed to the default output.
 		If set to `None` (default), it is shown, if `file is None`.
 	\param table_head This option can be used to add content between the `\toprule` and `head_row`, e.g. for multi-line table heads.
@@ -208,6 +222,7 @@ def print_table_LaTeX(table: list,
 			lineend=r" \\",
 			head_sep=r"\midrule",
 			file=None,
+			replacement=replacement,
 			show=False,
 			transpose_data=False,
 			)
@@ -219,7 +234,16 @@ def print_table_LaTeX(table: list,
 	_output_table(formatted_lines, file, show)
 	return formatted_lines
 
-def _apply_format(table, formatter):
+def replace(table: list, source: list, target) -> list:
+	"""
+	Replace specific values by something else in all cells.
+	\param table Table, for which the content of all cells should be replaced, if they contain something in `source`.
+	\param source Iterable of values, that should be replaced by `target`.
+	\param target Replacement content.
+	"""
+	return [[target if entry in source else entry for entry in record] for record in table]
+
+def _apply_format(table, formatter) -> list:
 	"""
 	Converts the entries of the given table into `str`.
 	\param table Table with the original content to be converted.
@@ -235,7 +259,7 @@ def _apply_format(table, formatter):
 		str_table.append(str_row)
 	return str_table
 
-def _align(table, align):
+def _align(table, align) -> list:
 	"""
 	Brings the cells of a column to the same width for all columns.
 	The content in the cell is aligned according to `align`.
