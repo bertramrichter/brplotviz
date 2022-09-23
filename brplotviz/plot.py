@@ -82,19 +82,21 @@ def multi_scatter(x_table, y_table, record_names: list = None, *args, **kwargs):
 	return mixed_graphs(record_list, *args, **kwargs)
 
 def mixed_graphs(record_list: list,
-					xlabel: str = None,
-					ylabel: str = None,
-					tick_pos: list = None,
-					tick_labels: list = None,
-					show_legend: bool = True,
-					pltrcParams: dict = None,
-					pltsettings: dict = None,
-					file: str = None,
-					closeafter: bool = True,
-					show: bool = True,
-					fig = None,
-					ax = None,
-					*args, **kwargs):
+				xlabel: str = None,
+				ylabel: str = None,
+				x_tick_pos: list = None,
+				x_tick_labels: list = None,
+				y_tick_pos: list = None,
+				y_tick_labels: list = None,
+				show_legend: bool = True,
+				pltrcParams: dict = None,
+				pltsettings: dict = None,
+				file: str = None,
+				closeafter: bool = True,
+				show: bool = True,
+				fig = None,
+				ax = None,
+				*args, **kwargs):
 	"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
 	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <style>, <graphsettings>)`.
@@ -106,10 +108,14 @@ def mixed_graphs(record_list: list,
 		- `graphsettings` Dictionary with settings according to `matplotlib.Axes.ax.plot()`, which will be applied to this specific graph.
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
-	\param tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
-		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
-	\param tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
-		Both `tick_pos` and `tick_labels` need to be specified and of the same length for this to take effect.
+	\param x_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
+	\param x_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
+	\param y_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
+	\param y_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
 	\param show_legend Switch, whether the legend should be shown. Defaults to `True`.
 	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	\param pltsettings Dictionary of settings that will be applied to every graph in `record_list`.
@@ -144,8 +150,10 @@ def mixed_graphs(record_list: list,
 		settings.update(graphsettings)
 		ax.plot(x_record, y_record, **settings)
 	# Appearance
-	if tick_pos is not None and tick_labels is not None:
-		ax.set_xticks(ticks=tick_pos, labels=tick_labels, rotation=45)
+	if x_tick_pos is not None and x_tick_labels is not None:
+		ax.set_xticks(ticks=x_tick_pos, labels=x_tick_labels)
+	if y_tick_pos is not None and y_tick_labels is not None:
+		ax.set_yticks(ticks=y_tick_pos, labels=y_tick_labels)
 	if xlabel is not None:
 		ax.set_xlabel(xlabel)
 	if ylabel is not None:
@@ -156,14 +164,14 @@ def mixed_graphs(record_list: list,
 	return fig, ax
 
 def bar_variable(bins: list,
-					y_values: tuple,
-					pltrcParams: dict = None,
-					file: str = None,
-					closeafter: bool = True,
-					show: bool = True,
-					fig = None,
-					ax = None,
-					):
+				y_values: tuple,
+				pltrcParams: dict = None,
+				file: str = None,
+				closeafter: bool = True,
+				show: bool = True,
+				fig = None,
+				ax = None,
+				):
 	"""
 	Plots a bar plot with a variable number of bins.
 	\todo Is it really necessary to be able use a variable number of bars per bin?
@@ -198,18 +206,18 @@ def bar_variable(bins: list,
 	return fig, ax
 
 def bar_categories(record_list: list,
-					category_names: list = None,
-					record_names: list = None,
-					xlabel: str = None,
-					ylabel: str = None,
-					show_legend: bool = None,
-					pltrcParams: dict = None,
-					file: str = None,
-					show: bool = True,
-					closeafter: bool = True,
-					fig = None,
-					ax = None,
-					*args, **kwargs):
+				category_names: list = None,
+				record_names: list = None,
+				xlabel: str = None,
+				ylabel: str = None,
+				show_legend: bool = None,
+				pltrcParams: dict = None,
+				file: str = None,
+				show: bool = True,
+				closeafter: bool = True,
+				fig = None,
+				ax = None,
+				*args, **kwargs):
 	"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
@@ -264,6 +272,71 @@ def bar_categories(record_list: list,
 	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
 	return fig, ax
 
+def matrix_plot(matrix: list,
+				xlabel: str = None,
+				ylabel: str = None,
+				colorbar_label: list = None,
+				x_tick_pos: list = None,
+				x_tick_labels: list = None,
+				y_tick_pos: list = None,
+				y_tick_labels: list = None,
+				show_legend: bool = False,
+				pltrcParams: dict = None,
+				pltsettings: dict = None,
+				file: str = None,
+				closeafter: bool = True,
+				show: bool = True,
+				fig = None,
+				ax = None,
+				*args, **kwargs):
+	"""
+	This function visualizes a matrix, coloring the cells according to the value along with a colorbar.
+	\param matrix An array like (e.g. list of lists), that will be shown. 
+	\param xlabel Description of the x-axis. Defaults to `None`.
+	\param ylabel Description of the y-axis. Defaults to `None`.
+	\param colorbar_label Description of the colorbar (data range shown by the matrix).
+	\param x_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
+	\param x_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
+	\param y_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
+	\param y_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
+		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
+	\param show_legend Switch, whether the legend should be shown. Defaults to `False`.
+	\param pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
+	\param pltsettings Dictionary of settings that will be applied to the matrix.
+		Defaults to `{"cmap": "viridis_r"}`.
+	\param file See \ref show_save_fig().
+	\param show See \ref show_save_fig().
+	\param closeafter See \ref show_save_fig().
+	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
+	\param ax `matplotlib.axes.Axes`, if `fig` or `ax` is `None` (default), a fresh one is generated.
+	\param *args Positional arguments, will be ignored.
+	\param *kwargs Keyword arguments, will be ignored.
+	\return Returns the the figure and the axis objects: `fig, ax`.
+	"""
+	pltrcParams = pltrcParams if pltrcParams is not None else {}
+	pltsettings_tmp = pltsettings if pltsettings is not None else {}
+	pltsettings = {"cmap": "viridis_r"}
+	pltsettings.update(pltsettings_tmp)
+	fig, ax = get_figure(fig, ax, **pltrcParams)
+	mat = ax.matshow(matrix, **pltsettings)
+	fig.colorbar(mat, location="right", label=colorbar_label)
+	# Appearance
+	if x_tick_pos is not None and x_tick_labels is not None:
+		ax.set_xticks(ticks=x_tick_pos, labels=x_tick_labels, rotation=90)
+	if y_tick_pos is not None and y_tick_labels is not None:
+		ax.set_yticks(ticks=y_tick_pos, labels=y_tick_labels)
+	if xlabel is not None:
+		ax.set_xlabel(xlabel)
+	if ylabel is not None:
+		ax.set_ylabel(ylabel)
+	if show_legend:
+		ax.legend(loc="best")
+	show_save_fig(fig, file=file, closeafter=closeafter, show=show)
+	return fig, ax
+
 def get_figure(fig = None, ax = None, **pltrcParams):
 	"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
@@ -292,10 +365,10 @@ def get_figure(fig = None, ax = None, **pltrcParams):
 	return fig, ax
 
 def show_save_fig(fig,
-					file: str = None,
-					show: bool = True,
-					closeafter: bool = True,
-					):
+				file: str = None,
+				show: bool = True,
+				closeafter: bool = True,
+				):
 	"""
 	Shows or saves the figure.
 	\param fig Figure to be shown or saved.
