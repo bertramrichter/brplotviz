@@ -9,6 +9,7 @@ import os
 import warnings
 
 from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 
 import styleselect
@@ -322,7 +323,9 @@ def matrix_plot(matrix: list,
 	pltsettings.update(pltsettings_tmp)
 	fig, ax = get_figure(fig, ax, **pltrcParams)
 	mat = ax.matshow(matrix, **pltsettings)
-	fig.colorbar(mat, location="right", label=colorbar_label)
+	divider = make_axes_locatable(ax)
+	cax = divider.append_axes("right", size="5%", pad=0.1)
+	cbar = fig.colorbar(mat, cax=cax, label=colorbar_label)
 	# Appearance
 	if x_tick_pos is not None and x_tick_labels is not None:
 		ax.set_xticks(ticks=x_tick_pos, labels=x_tick_labels, rotation=90)
