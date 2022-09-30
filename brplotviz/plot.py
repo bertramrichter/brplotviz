@@ -364,7 +364,6 @@ def get_figure(fig = None, ax = None, **pltrcParams):
 	ax.line_style = styleselect.get_plot_style_line()()
 	ax.scatter_style = styleselect.get_plot_style_scatter()()
 	ax.hatch_style = styleselect.get_plot_style_hatch()()
-	fig.set_tight_layout("tight")
 	return fig, ax
 
 def show_save_fig(fig,
@@ -380,12 +379,13 @@ def show_save_fig(fig,
 	\param show Switch, whether the figure should be shown. Defaults to `True`.
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
+	fig.tight_layout()
 	if file is not None:
 		file = os.path.join(os.getcwd(), file)
 		try:
 			if not os.path.exists(os.path.dirname(file)):
 				os.makedirs(os.path.dirname(file))
-			fig.savefig(file)
+			fig.savefig(file, bbox_inches='tight')
 		except:
 			print('Failed to save plot to file "{}"'.format(file))
 	if show:
