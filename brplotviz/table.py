@@ -348,9 +348,9 @@ def _output_table(formatted_lines, file, show):
 	\param file Path to the file in which the table is written to.
 		Defaults to `None`, which means the table is printed on screen instead of saved to disk.
 		If a valid path is given, the table is written to this file.
-		Overwrites the content of the file without further questions.
+		The content of the file is overwritten without further questions.
 	\param show Switch, whether the formatted table should be printed to the default output.
-		If set to `None` (default), it is shown, if `file is None`. 
+		By default (`None`), it is only shown, if no file is provided (`file is None`).
 	"""
 	show = show if show is not None else (file is None)
 	if file is not None:

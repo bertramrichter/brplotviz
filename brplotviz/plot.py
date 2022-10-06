@@ -94,7 +94,7 @@ def mixed_graphs(record_list: list,
 				pltsettings: dict = None,
 				file: str = None,
 				closeafter: bool = True,
-				show: bool = True,
+				show: bool = None,
 				fig = None,
 				ax = None,
 				*args, **kwargs):
@@ -169,7 +169,7 @@ def bar_variable(bins: list,
 				pltrcParams: dict = None,
 				file: str = None,
 				closeafter: bool = True,
-				show: bool = True,
+				show: bool = None,
 				fig = None,
 				ax = None,
 				):
@@ -214,7 +214,7 @@ def bar_categories(record_list: list,
 				show_legend: bool = None,
 				pltrcParams: dict = None,
 				file: str = None,
-				show: bool = True,
+				show: bool = None,
 				closeafter: bool = True,
 				fig = None,
 				ax = None,
@@ -286,7 +286,7 @@ def matrix_plot(matrix: list,
 				pltsettings: dict = None,
 				file: str = None,
 				closeafter: bool = True,
-				show: bool = True,
+				show: bool = None,
 				fig = None,
 				ax = None,
 				*args, **kwargs):
@@ -368,17 +368,21 @@ def get_figure(fig = None, ax = None, **pltrcParams):
 
 def show_save_fig(fig,
 				file: str = None,
-				show: bool = True,
+				show: bool = None,
 				closeafter: bool = True,
 				):
 	"""
 	Shows or saves the figure.
 	\param fig Figure to be shown or saved.
-	\param file Path to the file in which the graph is saved. Defaults to `None`, which means the graph is shown on screen instead of saved to disk.
-		If a valid path is given, the graph is saved to this file. Overwrites the content of the file without further questions.
-	\param show Switch, whether the figure should be shown. Defaults to `True`.
+	\param file Path to the file in which the graph is saved.
+		Defaults to `None`, which means the graph is shown on screen instead of saved to disk.
+		If a valid path is given, the graph is saved to this file.
+		The content of the file is overwritten without further questions.
+	\param show Switch, whether the figure should be shown on screen.
+		By default (`None`), it is only shown, if no file is provided (`file is None`). 
 	\param closeafter Switch, whether the figure should be closed after showing or saving. Defaults to `True`.
 	"""
+	show = show if show is not None else (file is None)
 	fig.tight_layout()
 	if file is not None:
 		file = os.path.join(os.getcwd(), file)

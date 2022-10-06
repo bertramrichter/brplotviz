@@ -13,7 +13,7 @@ def set_plot_style_fig(**pltrcParams):
 	Set the general style for the background and grid.
 	\param **pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	"""
-	settings = {"svg.fonttype": "none", "font.size": 10, "axes.grid": True, "axes.axisbelow": True}
+	settings = {"svg.fonttype": "none", "font.size": 10, "axes.grid": True, "axes.axisbelow": True, "savefig.dpi": 300}
 	settings.update(pltrcParams)
 	plt.rcParams.update(settings)
 
