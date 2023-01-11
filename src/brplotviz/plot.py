@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 
-import styleselect
+from . import styleselect
 
 def single_line(x_values: list, y_values: list, record_name: str = None, *args, **kwargs):
 	"""

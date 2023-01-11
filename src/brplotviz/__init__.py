@@ -5,5 +5,5 @@
 ## \author Bertram Richter
 ## \date 2022
 
-import plot
-import table
+from . import plot
+from . import table
