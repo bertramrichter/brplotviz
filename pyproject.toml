@@ -1,0 +1,50 @@
+[project]
+name = "brplotviz"  # Required
+
+version = "0.1"
+
+description = "Plot utitilies for outputting plots and tables nicely formatted"
+
+readme = "README.md"
+
+requires-python = ">=3.6"
+
+license = {file = "LICENSE"}
+
+keywords = ["plot", "table", "output"]
+
+authors = [
+	{name = "Bertram Richter", email = "bertram.richter@tu-dresden.de" }
+]
+
+maintainers = [
+	{name = "Bertram Richter", email = "bertram.richter@tu-dresden.de" }
+]
+
+classifiers = [
+	"Framework :: Matplotlib",
+	
+	"License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+	
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.7",
+	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = [
+	"matplotlib >= 3.5.0",
+	"numpy",
+]
+
+[project.urls]  # Optional
+"Homepage" = "https://github.com/bertramrichter/brplotviz"
+"Bug Reports" = "https://github.com/bertramrichter/brplotviz/issues"
+"Source" = "https://github.com/bertramrichter/brplotviz"
+
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
