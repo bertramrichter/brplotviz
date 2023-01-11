@@ -2,6 +2,8 @@
 _*
 .*
 !.gitignore
+dist
+*.egg-info
 Documentation
 test*
 Test*
