@@ -92,9 +92,9 @@ In order to use this framework, make sure, that:
 To build the documentation, run `doxygen` in this directory to generate it to the directory `./Documentation`
 
 # Licence and Copyright
-\author Bertram Richter
-\copyright GPLv3 or later
-\date 2022
+**Author:** Bertram Richter  
+**Copyright:** Copyright by the author, 2023.  
+**License:** This software is released under GPLv3, see [LICENSE](./LICENSE) for details
 
 # Dependencies
 - `Python >=3.?` (Developed under Python 3.9)
