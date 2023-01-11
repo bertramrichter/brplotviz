@@ -97,5 +97,6 @@ To build the documentation, run `doxygen` in this directory to generate it to th
 \date 2022
 
 # Dependencies
-- `Python >=3.?` (Developend under Python 3.9)
+- `Python >=3.?` (Developed under Python 3.9)
 - `matplotlib >=3.5.0` for plotting and drawing graphs. See [matplotlib.org](https://matplotlib.org) for the documentation.
+- `numpy` for array operations. See [numpy.org](https://numpy.org) for the documentation.
