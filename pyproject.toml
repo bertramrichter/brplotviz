@@ -3,7 +3,7 @@ name = "brplotviz"  # Required
 
 version = "0.1"
 
-description = "Plot utitilies for outputting plots and tables nicely formatted"
+description = "Plot utilities for outputting plots and tables nicely formatted"
 
 readme = "README.md"
 

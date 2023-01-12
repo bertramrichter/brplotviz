@@ -1,4 +1,4 @@
-`brplotviz` are plot utitilies for outputting plots using `matplotlib` and nicely formatted tables according to the personal taste of Bertram Richter.
+`brplotviz` are plot utilities for outputting plots using `matplotlib` and nicely formatted tables according to the personal taste of Bertram Richter.
 
 # Getting started
 This package provides functions to simplify the output of nicely fomatted graphs.
@@ -65,7 +65,7 @@ brplotviz.table.print_table(
 
 We can put out the table formatted as a LaTeX table as well.
 After copying into a `.tex` file and compiling it with LaTeX, it is typeset with professional quality.
-For this to work, follow the additional measures as described in \ref brplotviz.table.print_table_LaTeX().
+For this to work, follow the additional steps as described in \ref brplotviz.table.print_table_LaTeX().
 
 ```
 brplotviz.table.print_table_LaTeX(
@@ -80,15 +80,12 @@ brplotviz.table.print_table_LaTeX(
 ```
 
 The content can be written to disk, if the keyword argument `file=<file path here>` is passed, which works for all presented functions.
-Warning the file is overwritten without further questions.
+Warning: the file is overwritten without further questions.
 
 All of the presented functions are compiled in \ref example.py ready to run.
 
 # Installation and Building documentation
-In order to use this framework, make sure, that:
-- the dependencies as stated below are correctly installed (follow the instruction of the packages),
-- this `brplotviz` directory is in your `$PYTHONPATH`, for the modules to be importable.
-
+Install this package via `pip install -U brplotviz`.
 To build the documentation, run `doxygen` in this directory to generate it to the directory `./Documentation`
 
 # Licence and Copyright

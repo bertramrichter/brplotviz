@@ -1,9 +1,11 @@
 
-## \file
-## Contains table printing functionalities.
-## \author Bertram Richter
-## \date 2022
-## \package brplotviz.table \copydoc table.py
+"""
+\file
+Contains table printing functionalities.
+\author Bertram Richter
+\date 2022
+\package brplotviz.table \copydoc table.py
+"""
 
 import codecs
 import os

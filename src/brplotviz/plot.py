@@ -1,9 +1,11 @@
 
-## \file
-## Contains functions for plotting.
-## \author Bertram Richter
-## \date 2022
-## \package brplotviz.plot \copydoc plot.py
+"""
+\file
+Contains functions for plotting.
+\author Bertram Richter
+\date 2022
+\package brplotviz.plot \copydoc plot.py
+"""
 
 import os
 import warnings
