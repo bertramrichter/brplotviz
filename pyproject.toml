@@ -1,5 +1,5 @@
 [project]
-name = "brplotviz"  # Required
+name = "brplotviz"
 
 version = "0.1"
 
@@ -40,7 +40,7 @@ dependencies = [
 	"numpy",
 ]
 
-[project.urls]  # Optional
+[project.urls]
 "Homepage" = "https://github.com/bertramrichter/brplotviz"
 "Bug Reports" = "https://github.com/bertramrichter/brplotviz/issues"
 "Source" = "https://github.com/bertramrichter/brplotviz"
