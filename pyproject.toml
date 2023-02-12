@@ -1,7 +1,7 @@
 [project]
 name = "brplotviz"
 
-version = "0.1"
+version = "0.1.1"
 
 description = "Plot utilities for outputting plots and tables nicely formatted"
 
@@ -23,9 +23,9 @@ maintainers = [
 
 classifiers = [
 	"Framework :: Matplotlib",
-	
+
 	"License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-	
+
 	"Programming Language :: Python :: 3",
 	"Programming Language :: Python :: 3.7",
 	"Programming Language :: Python :: 3.8",
