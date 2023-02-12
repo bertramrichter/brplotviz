@@ -24,7 +24,8 @@ def print_table(table: list,
 					replacement: tuple = None,
 					show: bool = None,
 					transpose_data: bool = False,
-					*args, **kwargs) -> list:
+					return_lines: bool = False,
+					*args, **kwargs):
 	"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
@@ -64,6 +65,7 @@ def print_table(table: list,
 	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting.
 		Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
+	\param return_lines Switch, whether the list of formatted lines should be returned. Defaults to `False`.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
 	
@@ -101,7 +103,8 @@ def print_table(table: list,
 		formatted_lines.insert(0, "{}".format(caption))
 	# Output
 	_output_table(formatted_lines, file, show)
-	return formatted_lines
+	if return_lines:
+		return formatted_lines
 
 def print_table_LaTeX(table: list,
 					head_row: list = None,
@@ -117,7 +120,8 @@ def print_table_LaTeX(table: list,
 					replacement: tuple = None,
 					table_head: str = None,
 					transpose_data: bool = False,
-					*args, **kwargs) -> list:
+					return_lines: bool = False,
+					*args, **kwargs):
 	"""
 	Prints the table in a LaTeX format, and it can be copied or input directly into a TeX file.
 	This is a convenience wrapper around \ref print_table().
@@ -164,6 +168,7 @@ def print_table_LaTeX(table: list,
 	\param transpose_data If set to `True`, the content of `table` will be transposed before typesetting.
 		Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
+	\param return_lines Switch, whether the list of formatted lines should be returned. Defaults to `False`.
 	\param *args Positional arguments, will be ignored.
 	\param *kwargs Keyword arguments, will be ignored.
 	
@@ -227,6 +232,7 @@ def print_table_LaTeX(table: list,
 			replacement=replacement,
 			show=False,
 			transpose_data=False,
+			return_lines=True,
 			)
 	formatted_lines.extend(content)
 	# Postamble
@@ -234,7 +240,8 @@ def print_table_LaTeX(table: list,
 	formatted_lines.append(r"\end{tabular}")
 	# Output
 	_output_table(formatted_lines, file, show)
-	return formatted_lines
+	if return_lines:
+		return formatted_lines
 
 def replace(table: list, source: list, target) -> list:
 	"""
