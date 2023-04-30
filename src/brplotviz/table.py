@@ -55,8 +55,8 @@ def print_table(table: list,
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
 	\param head_sep If not `None` (default), this is put on an additional line between the head_row and the body of the table.
 		This has only an effect, if `head_row` is not `None` aswell.
-	\param replacement Tuple like `<source>, <target>`, where `<source>` is an iterable of value, that should be replaced by `<target>`.
-		Example: `(("0", "nan"), "")` will clear all cells, that contain zero or `NaN`.
+	\param replacement This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
+		Example: to replace all `NaN` (not a number) by em-dashes and all 0 by `"nothing"`: `{"nan": "---", 0: "nothing"}`
 		Defaults to `None` (no replacement is attempted).
 		If activated, the replacement in carried out after converting the cells to `str`, but before alignment.
 		If you want to replace (raw) content before the formatting, use \ref replace() before passing the table to \ref print_table().
@@ -92,7 +92,7 @@ def print_table(table: list,
 		table = _transpose_data(table)
 	table = _apply_format(table, formatter)
 	if replacement is not None:
-		table = replace(table, *replacement)
+		table = replace(table, replacement)
 	table = _include_head(table, head_row, head_col, top_left)
 	if align is not None:
 		table = _align(table, align)
@@ -156,8 +156,8 @@ def print_table_LaTeX(table: list,
 			By default, all data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format.
 			Make sure, the number of rows is in sync with the data to avoid compilation errors.
-	\param replacement Tuple like `<source>, <target>`, where `<source>` is an iterable of value, that should be replaced by `<target>`.
-		Example: `(("0", "nan"), "")` will clear all cells, that contain zero or `NaN`.
+	\param replacement  This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
+		Example: to replace all `NaN` (not a number) by em-dashes and all 0 by `"nothing"`: `{"nan": "---", 0: "nothing"}`
 		Defaults to `None` (no replacement is attempted).
 		If activated, the replacement in carried out after converting the cells to `str`, but before alignment.
 		If you want to replace (raw) content before the formatting, use \ref replace() before passing the table to \ref print_table().
@@ -243,14 +243,17 @@ def print_table_LaTeX(table: list,
 	if return_lines:
 		return formatted_lines
 
-def replace(table: list, source: list, target) -> list:
+def replace(table: list, replacement: dict) -> list:
 	"""
 	Replace specific values by something else in all cells.
+	\todo Change replacement to be a `dict`.
 	\param table Table, for which the content of all cells should be replaced, if they contain something in `source`.
-	\param source Iterable of values, that should be replaced by `target`.
-	\param target Replacement content.
+	\param replacement This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
+		Example: to replace all `NaN` (not a number) by em-dashes and all `0` by `"nothing"`: `{"nan": "---", 0: "nothing"}`
 	"""
-	return [[target if entry in source else entry for entry in record] for record in table]
+	if replacement is None:
+		return table
+	return [[replacement[entry] if entry in replacement else entry for entry in record] for record in table]
 
 def _apply_format(table, formatter) -> list:
 	"""
