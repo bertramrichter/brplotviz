@@ -106,7 +106,7 @@ def mixed_graphs(record_list: list,
 		- `x_values`: List of x-axis values.
 		- `y_values`: List of y-axis values.
 		- `style`: Specifies, how the record should be shown. Available options are:
-			- `"plot"`: Generates a line plot.
+			- `"line"`: Generates a line plot.
 			- `"scatter"`: Generates a scatter plot.
 		- `graphsettings` Dictionary with settings according to `matplotlib.Axes.ax.plot()`, which will be applied to this specific graph.
 	\param xlabel Description of the x-axis. Defaults to `None`.
