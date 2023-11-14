@@ -111,11 +111,11 @@ def mixed_graphs(record_list: list,
 		- `graphsettings` Dictionary with settings according to `matplotlib.Axes.ax.plot()`, which will be applied to this specific graph.
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
-	\param x_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+	\param x_tick_pos Positions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
 	\param x_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
-	\param y_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+	\param y_tick_pos Positions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
 	\param y_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
@@ -298,11 +298,11 @@ def matrix_plot(matrix: list,
 	\param xlabel Description of the x-axis. Defaults to `None`.
 	\param ylabel Description of the y-axis. Defaults to `None`.
 	\param colorbar_label Description of the colorbar (data range shown by the matrix).
-	\param x_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+	\param x_tick_pos Positions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
 	\param x_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `x_tick_pos` and `x_tick_labels` need to be specified and of the same length for this to take effect.
-	\param y_tick_pos Postions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
+	\param y_tick_pos Positions, where ticks should appear. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
 	\param y_tick_labels Labels for the manually specified ticks. Defaults to `None`, which means, that the default axis ticks are used.
 		Both `y_tick_pos` and `y_tick_labels` need to be specified and of the same length for this to take effect.
