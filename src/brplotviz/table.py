@@ -246,7 +246,6 @@ def print_table_LaTeX(table: list,
 def replace(table: list, replacement: dict) -> list:
 	"""
 	Replace specific values by something else in all cells.
-	\todo Change replacement to be a `dict`.
 	\param table Table, for which the content of all cells should be replaced, if they contain something in `source`.
 	\param replacement This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
 		Example: to replace all `NaN` (not a number) by em-dashes and all `0` by `"nothing"`: `{"nan": "---", 0: "nothing"}`
