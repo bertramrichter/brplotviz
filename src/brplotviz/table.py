@@ -266,7 +266,10 @@ def _apply_format(table, formatter) -> list:
 	for format_row, row in zip(formatter_table, table):
 		str_row = []
 		for format_entry, entry in zip(format_row, row):
-			str_row.append("{}".format("{"+format_entry+"}").format(entry))
+			try:
+				str_row.append("{}".format("{"+format_entry+"}").format(entry))
+			except:
+				str_row.append(str(entry))
 		str_table.append(str_row)
 	return str_table
 
