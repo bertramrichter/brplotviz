@@ -105,8 +105,10 @@ def print_table(table: list,
 	| `head_col 1`	| `1,0`	| `1,1`	|
 	"""
 	engine = get_engine(engine)
-	# Default to show only, if file is None,
+	# make a deepcopy to not modify the original data
 	table = copy.deepcopy(table)
+	# convert the table to a list of lists (e.g., from numpy arrays)
+	table = [list(row) if not isinstance(row, Rule) else row for row in table]
 	if transpose_data:
 		table = _transpose_data(table)
 	table = _include_head(table, head_row, head_col, top_left)

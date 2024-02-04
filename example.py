@@ -37,6 +37,7 @@ brplotviz.plot.bar_categories(y_table, category_names=x_list, record_names=recor
 # Printing a table:
 brplotviz.table.print_table(
 	table=y_table,
+	engine="csv",
 	head_row=x_list,
 	head_col=record_names,
 	top_left="Values",

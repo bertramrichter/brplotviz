@@ -1,5 +1,6 @@
 # Ignore list for git
 _*
+!*.__init__.py
 .*
 !.gitignore
 dist
