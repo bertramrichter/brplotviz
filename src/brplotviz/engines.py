@@ -23,15 +23,19 @@ class Engine():
 	\todo
 	"""
 	def __init__(self,
-			linestart,
-			firstsep,
-			itemsep,
-			lineend
+			linestart: str,
+			firstsep: str,
+			itemsep: str,
+			lineend: str,
+			pad_left: str = "",
+			pad_right: str = "",
 			):
 		self.linestart = linestart
 		self.firstsep = firstsep
 		self.itemsep = itemsep
 		self.lineend = lineend
+		self.pad_left = pad_left
+		self.pad_right = pad_right
 	def rule(self, widths: list, align: list, rule_type: str):
 		"""
 		\todo
@@ -44,20 +48,25 @@ class Engine():
 		"""
 		\todo
 		"""
-		return self.linestart + row[0] + self.firstsep + self.itemsep.join(row[1::]) + self.lineend
+		line = self.linestart + self.pad_right \
+			+ row[0] \
+			+ self.pad_left + self.firstsep + self.pad_right \
+			+ (self.pad_left + self.itemsep + self.pad_right).join(row[1::]) \
+			+ self.pad_left + self.lineend
+		return line
 
 class csv(Engine):
 	"""
 	Character separated table.
 	Default is the 
 	"""
-	def __init__(self, itemsep: str = ",",):
+	def __init__(self, itemsep: str = ",", **kwargs):
 		super().__init__(
 			linestart = "",
 			firstsep = itemsep,
 			itemsep = itemsep,
 			lineend = "",
-			)
+			**kwargs)
 	def rule(self, widths: list, align: str, rule_type: str):
 		"""
 		\todo
@@ -68,15 +77,16 @@ class csv(Engine):
 			return None
 
 class tsv(csv):
-	def __init__(self, itemsep: str = "\t",):
-		super().__init__(itemsep)
+	def __init__(self, itemsep: str = "\t", **kwargs):
+		super().__init__(itemsep, **kwargs)
 
 class latex(Engine):
-	def __init__(self):
+	def __init__(self, **kwargs):
 		super().__init__(linestart="",
 			firstsep="&",
 			itemsep="&",
-			lineend=r"\\")
+			lineend=r"\\",
+			**kwargs)
 	def rule(self, widths: list, align: list, rule_type: str):
 		"""
 		\todo
