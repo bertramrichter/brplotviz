@@ -4,28 +4,45 @@
 Contains table printing functionalities.
 \author Bertram Richter
 \date 2022
-\package brplotviz.table \copydoc table.py
+\package brplotviz.table_old \copydoc table.py
 """
 
 import codecs
+import copy
+import itertools
 import os
 
+from . import engines
+from .engines import *
+from . import rules
+from .rules import *
+
+def get_engine(engine):
+	"""
+	\todo 
+	"""
+	if isinstance(engine, Engine):
+		return engine
+	elif isinstance(engine, str):
+		try: 
+			return getattr(engines, engine.lower())()
+		except:
+			raise RuntimeError("Unkonwn table layout engine: {}".format(engine))
+
 def print_table(table: list,
-					head_col: list = None,
-					head_row: list = None,
-					top_left: str = "",
-					align = "l",
-					caption: str = None,
-					itemsep: str = "\t",
-					lineend: str = "",
-					file: str = None,
-					formatter = None,
-					head_sep: str = None,
-					replacement: tuple = None,
-					show: bool = None,
-					transpose_data: bool = False,
-					return_lines: bool = False,
-					*args, **kwargs):
+		engine: str,
+		head_col: list = None,
+		head_row: list = None,
+		top_left: str = "",
+		align = "l",
+		caption: str = None,
+		file: str = None,
+		formatter = None,
+		replacement: tuple = None,
+		show: bool = None,
+		transpose_data: bool = False,
+		return_lines: bool = False,
+		*args, **kwargs):
 	"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
@@ -87,20 +104,39 @@ def print_table(table: list,
 	| `head_col 0`	| `0,0`	| `0,1`	|
 	| `head_col 1`	| `1,0`	| `1,1`	|
 	"""
+	engine = get_engine(engine)
 	# Default to show only, if file is None,
+	table = copy.deepcopy(table)
 	if transpose_data:
 		table = _transpose_data(table)
+	table = _include_head(table, head_row, head_col, top_left)
 	table = _apply_format(table, formatter)
 	if replacement is not None:
 		table = replace(table, replacement)
-	table = _include_head(table, head_row, head_col, top_left)
-	if align is not None:
-		table = _align(table, align)
-	formatted_lines = _typeset_lines(table, itemsep, lineend)
-	if head_row is not None and head_sep is not None:
-		formatted_lines.insert(1, "{}".format(head_sep))
+	col_widths = _find_col_width(table)
+	col_widths = engine.modify_col_widths(col_widths, align)
+	formatted_lines = []
 	if caption is not None:
-		formatted_lines.insert(0, "{}".format(caption))
+		formatted_lines.append(caption)
+	_rule(formatted_lines, TopRule(), engine, col_widths, align)
+	row = _align(table[0], align, col_widths)
+	formatted_lines.append(engine.row(row))
+	_rule(formatted_lines, HeadRule(), engine, col_widths, align)
+	row_count = len(table)
+	for row_nr, row in enumerate(table[1::]):
+		if not isinstance(row, Rule):
+			row = _align(row, align, col_widths)
+			formatted_lines.append(engine.row(row))
+			rule = engine.rule(col_widths, align, row)
+			if rule is not None:
+				formatted_lines.append(rule)
+			if not row_nr == row_count-1:
+				_rule(formatted_lines, MidRule(), engine, col_widths, align)
+		else:
+			_rule(formatted_lines, row, engine, col_widths, align)
+	rule = engine.rule(col_widths, align, BotRule())
+	if rule is not None:
+		formatted_lines.append(rule)
 	# Output
 	_output_table(formatted_lines, file, show)
 	if return_lines:
@@ -188,8 +224,6 @@ def print_table_LaTeX(table: list,
 	```
 	"""
 	# Preparation
-	if transpose_data:
-		table = _transpose_data(table)
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
 	if head_row is not None:
 		top_left = r"\thfl{"+"{}".format(top_left)+r"}"
@@ -219,15 +253,13 @@ def print_table_LaTeX(table: list,
 		formatted_lines.append(table_head)
 	# Table content
 	content = print_table(table=table,
+			engine=latex(),
 			align=align,
 			head_row=head_row,
 			head_col=head_col,
 			top_left=top_left,
 			caption=None,
 			formatter=formatter,
-			itemsep=r" & ",
-			lineend=r" \\",
-			head_sep=r"\midrule",
 			file=None,
 			replacement=replacement,
 			show=False,
@@ -261,19 +293,25 @@ def _apply_format(table, formatter) -> list:
 	\param formatter Format option, see \ref _get_formatter_table().
 	\return Returns a table of the same dimensions sasdf
 	"""
-	formatter_table = _get_formatter_table(table, formatter)
+	if formatter is None:
+		formatter = ""
+	if isinstance(formatter, str):
+		formatter = itertools.repeat(formatter)
 	str_table = []
-	for format_row, row in zip(formatter_table, table):
-		str_row = []
-		for format_entry, entry in zip(format_row, row):
-			try:
-				str_row.append("{}".format("{"+format_entry+"}").format(entry))
-			except:
-				str_row.append(str(entry))
-		str_table.append(str_row)
+	for row in table:
+		if not isinstance(row, Rule):
+			str_row = []
+			for format_entry, entry in zip(formatter, row):
+				try:
+					str_row.append("{}".format("{"+format_entry+"}").format(entry))
+				except:
+					str_row.append(str(entry))
+			str_table.append(str_row)
+		else:
+			str_table.append(row)
 	return str_table
 
-def _align(table, align) -> list:
+def _align(row, align, col_widths) -> list:
 	"""
 	Brings the cells of a column to the same width for all columns.
 	The content in the cell is aligned according to `align`.
@@ -289,15 +327,17 @@ def _align(table, align) -> list:
 	\return Returns a ist of lists of str, where each column has the same width.
 	"""
 	align_dict = {"l": "<", "c": "^", "r": ">"}
-	if isinstance(align, str):
-		alignment = [align_dict[align]]*max([len(row) for row in table])
-	elif isinstance(align,list):
-		alignment =  [align_dict[col] for col in align]
+	if align is None:
+		return row
 	else:
-		raise ValueError("Wrong alignment type.")
-	col_width = _find_col_width(table)
-	aligned = [[("{:" + align + str(width) + "}").format(str(entry)) for align, entry, width in zip(alignment, row, col_width)]for row in table]
-	return aligned
+		if isinstance(align, str):
+			alignment = [align_dict[align]]*len(row)
+		elif isinstance(align, list):
+			alignment = [align_dict[col] for col in align]
+		else:
+			raise ValueError("Wrong alignment type.")
+		aligned = [("{:" + align + str(width) + "}").format(str(entry)) for align, entry, width in zip(alignment, row, col_widths)]
+		return aligned
 
 def _find_col_width(table) -> list:
 	"""
@@ -305,7 +345,8 @@ def _find_col_width(table) -> list:
 	\param table Table for which the column widths should be determined.
 		It is assumed, that the original table is converted by \ref _apply_format() prior to it.
 	"""
-	col_list = _transpose_data(table)
+	table_tmp = [row for row in table if not isinstance(row, Rule)]
+	col_list = _transpose_data(table_tmp)
 	return [max([len(entry) for entry in col]) for col in col_list]
 
 def _get_formatter_table(table, formatter) -> list:
@@ -344,10 +385,11 @@ def _include_head(table, head_row, head_col, top_left) -> list:
 	\param top_left Content of the cell, which appears in the top left corner of the table, when both `head_row` and `head_col` is added.
 	"""
 	if head_col is not None:
-		table = _transpose_data(table)
-		table.insert(0, [str(entry) for entry in head_col])
-		table = _transpose_data(table)
-		
+		head_col_gen = iter(copy.deepcopy(head_col))
+		for row in table:
+			if not isinstance(row, Rule):
+				row.insert(0, str(next(head_col_gen)))
+	
 	if head_row is not None:
 		if head_col is not None:
 			table.insert(0, [str(top_left)] + [str(entry) for entry in head_row])
@@ -380,6 +422,15 @@ def _output_table(formatted_lines, file, show):
 	if show:
 		for line in formatted_lines:
 			print(line)
+
+def _rule(formatted_lines, rule, engine, col_widths, align):
+	"""
+	Add a rule.
+	\todo Document
+	"""
+	rule = engine.rule(col_widths, align, rule)
+	if rule is not None:
+		formatted_lines.append(rule)
 
 def _transpose_data(table: list) -> list:
 	"""

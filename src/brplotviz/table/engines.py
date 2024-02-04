@@ -1,22 +1,13 @@
+
 """
-Contains settings for 
+Contains settings 
+\todo 
 
 \author Bertram Richter
 \date 2024
 """
 
-class Rule():
-	pass
-class TopRule(Rule):
-	pass
-class HeadRule(Rule):
-	pass
-class MidRule(Rule):
-	pass
-class ExtraRule(Rule):
-	pass
-class BotRule(Rule):
-	pass
+from .rules import *
 
 class Engine():
 	"""
@@ -54,6 +45,8 @@ class Engine():
 			+ (self.pad_left + self.itemsep + self.pad_right).join(row[1::]) \
 			+ self.pad_left + self.lineend
 		return line
+	def modify_col_widths(self, col_widths, align):
+		return col_widths
 
 class csv(Engine):
 	"""
@@ -77,11 +70,20 @@ class csv(Engine):
 			return None
 
 class tsv(csv):
+	"""
+	\todo
+	"""
 	def __init__(self, itemsep: str = "\t", **kwargs):
 		super().__init__(itemsep, **kwargs)
 
 class latex(Engine):
+	"""
+	\todo
+	"""
 	def __init__(self, **kwargs):
+		"""
+		\todo
+		"""
 		super().__init__(linestart="",
 			firstsep="&",
 			itemsep="&",
@@ -103,24 +105,29 @@ class latex(Engine):
 			return None
 
 class markdown(Engine):
-	def __init__(self):
+	def __init__(self, **kwargs):
 		super().__init__(
 			linestart = "|",
 			firstsep = "|",
 			itemsep = "|",
 			lineend = "|",
+			**kwargs
 			)
-		self.rulestart = "|"
-		self.firstrulesep = "|"
-		self.rulesep = "|"
-		self.ruleend = "|"
+		self.rulestart = "|",
+		self.firstrulesep = "|",
+		self.rulesep = "|",
+		self.ruleend = "|",
 	def rule(self, widths: list, align: str, rule_type: str):
 		"""
 		\todo
 		"""
 		if isinstance(rule_type, HeadRule):
+			if align is None or isinstance(align, str):
+				align = [align] * len(widths)
 			rule = []
 			for w, alignment in zip(widths, align):
+				if alignment is None:
+					rule.append("-"*max(3, w))
 				if alignment == "l": 
 					rule.append(":" + "-"*max(3, w-1))
 				elif alignment == "c": 
@@ -128,39 +135,18 @@ class markdown(Engine):
 				elif alignment == "r": 
 					rule.append("-"*max(3, w-1) + ":")
 			return self.row(rule)
-
-#class custom(Engine):
-#	def __init__(self, row_sep):
-#		self.row_sep = row_sep
-#	def rule(self, w: list, align: str, rule_type: str):
-#		"""
-#		\todo
-#		"""
-#		if isinstance(rule_type, ExtraRule):
-#			return ""
-#		else:
-#			return None
-
-def typeset(table, engine):
-	row_count = len(table)
-	widths=[len(str(i)) for i in table[0]]
-	align=["l"]*len(table[0])
-	prepared = [TopRule()]
-	prepared.append(table[0])
-	prepared.append(HeadRule())
-	for row_nr, row in enumerate(table[1::]):
-		prepared.append(row)
-		if not isinstance(row, Rule) or not row_nr == row_count-1:
-			prepared.append(MidRule())
-	prepared.append(BotRule())
-	for row in prepared:
-		if not isinstance(row, Rule):
-			formatted = engine.row(row)
-		else:
-			formatted = engine.rule(
-				widths=widths,
-				align=align,
-				rule_type=row)
-		if formatted is not None:
-				print(formatted)
-	
+	def modify_col_widths(self, col_widths, align):
+		"""
+		\todo Document
+		"""
+		if align is None or isinstance(align, str):
+			align = [align] * len(col_widths)
+		new_col_widths = []
+		for w, alignment in zip(col_widths, align):
+			if alignment is None:
+				new_col_widths.append(max(3, w))
+			elif alignment == "c": 
+				new_col_widths.append(max(5, w))
+			else: 
+				new_col_widths.append(max(4, w))
+		return new_col_widths
