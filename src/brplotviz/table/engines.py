@@ -1,7 +1,7 @@
 
 """
-Contains
-\todo 
+This module contains the class definitions for table engines, each of
+which in turn define the look of the table.
 
 \author Bertram Richter
 \date 2024
@@ -11,7 +11,11 @@ from .rules import *
 
 class Engine():
 	"""
-	\todo
+	Base class for a table engine.
+	An engine simply stores the style and look of the table, that is the
+	how the rows and columns are separated and how the frame around the
+	tabular data looks like.
+	For defining a custom table look, implement it as subclass to this one.
 	"""
 	def __init__(self,
 			linestart: str,
@@ -21,6 +25,9 @@ class Engine():
 			pad_left: str = "",
 			pad_right: str = "",
 			):
+		"""
+		\todo
+		"""
 		self.linestart = linestart
 		self.firstsep = firstsep
 		self.itemsep = itemsep
@@ -54,6 +61,9 @@ class csv(Engine):
 	Default is the 
 	"""
 	def __init__(self, itemsep: str = ",", **kwargs):
+		"""
+		\todo
+		"""
 		super().__init__(
 			linestart = "",
 			firstsep = itemsep,
@@ -106,6 +116,9 @@ class latex(Engine):
 
 class markdown(Engine):
 	def __init__(self, **kwargs):
+		"""
+		\todo
+		"""
 		super().__init__(
 			linestart = "|",
 			firstsep = "|",
