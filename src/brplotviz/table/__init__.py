@@ -4,7 +4,7 @@
 Contains table printing functionalities.
 \author Bertram Richter
 \date 2022
-\package brplotviz.table_old \copydoc table.py
+\package brplotviz.table \copydoc table.py
 """
 
 import codecs
@@ -286,7 +286,11 @@ def replace(table: list, replacement: dict) -> list:
 	"""
 	if replacement is None:
 		return table
-	return [[replacement[entry] if entry in replacement else entry for entry in record] for record in table]
+	for row in table:
+		if not isinstance(row, Rule):
+			for i, entry in enumerate(row):
+				row[i] = replacement[entry] if entry in replacement else entry
+	return table
 
 def _apply_format(table, formatter) -> list:
 	"""
