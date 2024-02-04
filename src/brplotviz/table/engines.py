@@ -1,6 +1,6 @@
 
 """
-Contains settings 
+Contains
 \todo 
 
 \author Bertram Richter
