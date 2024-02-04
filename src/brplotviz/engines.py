@@ -22,8 +22,16 @@ class Engine():
 	"""
 	\todo
 	"""
-	def __init__(self):
-		self.row_sep = ("row_start", "head_sep", "itemsep", "lineend")
+	def __init__(self,
+			linestart,
+			firstsep,
+			itemsep,
+			lineend
+			):
+		self.linestart = linestart
+		self.firstsep = firstsep
+		self.itemsep = itemsep
+		self.lineend = lineend
 	def rule(self, widths: list, align: list, rule_type: str):
 		"""
 		\todo
@@ -31,16 +39,44 @@ class Engine():
 		\param align List of `str` containing the column alignments.
 		\param rule_type \ref Rule object which indicates, which rule is used.
 		"""
-		return "-"*sum(widths)
+		return None
 	def row(self, row: list):
 		"""
 		\todo
 		"""
-		return self.row_sep[0] + row[0] + self.row_sep[1] + self.row_sep[2].join(row[1::]) + self.row_sep[3]
+		return self.linestart + row[0] + self.firstsep + self.itemsep.join(row[1::]) + self.lineend
+
+class csv(Engine):
+	"""
+	Character separated table.
+	Default is the 
+	"""
+	def __init__(self, itemsep: str = ",",):
+		super().__init__(
+			linestart = "",
+			firstsep = itemsep,
+			itemsep = itemsep,
+			lineend = "",
+			)
+	def rule(self, widths: list, align: str, rule_type: str):
+		"""
+		\todo
+		"""
+		if isinstance(rule_type, ExtraRule):
+			return ""
+		else:
+			return None
+
+class tsv(csv):
+	def __init__(self, itemsep: str = "\t",):
+		super().__init__(itemsep)
 
 class latex(Engine):
 	def __init__(self):
-		self.row_sep = ("", "&", "&", r"\\")
+		super().__init__(linestart="",
+			firstsep="&",
+			itemsep="&",
+			lineend=r"\\")
 	def rule(self, widths: list, align: list, rule_type: str):
 		"""
 		\todo
@@ -55,36 +91,32 @@ class latex(Engine):
 			return r"\addlinespace"
 		else:
 			return None
-	
-class csv(Engine):
-	def __init__(self):
-		self.row_sep = ("", ",", ",", "")
-	def rule(self, widths: list, align: str, rule_type: str):
-		"""
-		\todo
-		"""
-		if isinstance(rule_type, ExtraRule):
-			return ""
-		else:
-			return None
 
 class markdown(Engine):
 	def __init__(self):
-		self.row_sep = ("|", "|", "|", "|")
-		self.rule_sep = ("|", "|", "|", "|")
+		super().__init__(
+			linestart = "|",
+			firstsep = "|",
+			itemsep = "|",
+			lineend = "|",
+			)
+		self.rulestart = "|"
+		self.firstrulesep = "|"
+		self.rulesep = "|"
+		self.ruleend = "|"
 	def rule(self, widths: list, align: str, rule_type: str):
 		"""
 		\todo
 		"""
 		if isinstance(rule_type, HeadRule):
-			rule = [self.rule_sep[0]]
-			for w, aligned in zip(widths, align):
-				if aligned == "l": 
-					rule.append(":" + "-"*max(1, w-1))
-				elif aligned == "c": 
-					rule.append(":" + "-"*max(1, w-2) + ":")
-				elif aligned == "r": 
-					rule.append("-"*max(1, w-1) + ":")
+			rule = []
+			for w, alignment in zip(widths, align):
+				if alignment == "l": 
+					rule.append(":" + "-"*max(3, w-1))
+				elif alignment == "c": 
+					rule.append(":" + "-"*max(3, w-2) + ":")
+				elif alignment == "r": 
+					rule.append("-"*max(3, w-1) + ":")
 			return self.row(rule)
 
 #class custom(Engine):
@@ -99,7 +131,7 @@ class markdown(Engine):
 #		else:
 #			return None
 
-def simple_print(table, engine):
+def typeset(table, engine):
 	row_count = len(table)
 	widths=[len(str(i)) for i in table[0]]
 	align=["l"]*len(table[0])
@@ -108,7 +140,7 @@ def simple_print(table, engine):
 	prepared.append(HeadRule())
 	for row_nr, row in enumerate(table[1::]):
 		prepared.append(row)
-		if not isinstance(row, Rule) or not row_count-1:
+		if not isinstance(row, Rule) or not row_nr == row_count-1:
 			prepared.append(MidRule())
 	prepared.append(BotRule())
 	for row in prepared:
