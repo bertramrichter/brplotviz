@@ -1,10 +1,8 @@
 
 """
-\file
 Contains table printing functionalities.
 \author Bertram Richter
 \date 2022
-\package brplotviz.table \copydoc table.py
 """
 
 import codecs
@@ -19,7 +17,12 @@ from .rules import *
 
 def get_engine(engine):
 	"""
-	\todo 
+	Return the engine or retrieve an engine object by its class name.
+	This can be either an instance of the a subclass of \ref engines.Engine or a `str`.
+	If `engine` is an instance of a subclass, it is returned unchanged.
+	If `engine` is a string it is assumed to be a class name, and an
+	instance of that class with default settings is returned.
+	Note that the class name is case-insensitive.
 	"""
 	if isinstance(engine, Engine):
 		return engine
@@ -27,10 +30,10 @@ def get_engine(engine):
 		try: 
 			return getattr(engines, engine.lower())()
 		except:
-			raise RuntimeError("Unkonwn table layout engine: {}".format(engine))
+			raise RuntimeError("Unknown table layout engine: {}".format(engine))
 
 def print_table(table: list,
-		engine: str,
+		engine,
 		head_col: list = None,
 		head_row: list = None,
 		top_left: str = "",
@@ -255,7 +258,7 @@ def print_table_LaTeX(table: list,
 		formatted_lines.append(table_head)
 	# Table content
 	content = print_table(table=table,
-			engine=latex(),
+			engine="latex",
 			align=align,
 			head_row=head_row,
 			head_col=head_col,
