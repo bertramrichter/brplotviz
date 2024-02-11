@@ -24,7 +24,7 @@ class Engine():
 			lineend: str,
 			pad_left: str = "",
 			pad_right: str = "",
-			**kwargs):
+			*args, **kwargs):
 		"""
 		Construct the engine object.
 		\param linestart \copydoc linestart
@@ -54,7 +54,7 @@ class Engine():
 		`None` is returned if no rule should be drawn. 
 		\param widths List of `int` containing the column widths.
 		\param align List of `str` containing the column alignments.
-		\param rule_type \ref Rule object which indicates, which rule is used.
+		\param rule_type \ref rules.Rule object which indicates, which rule is used.
 		"""
 		return None
 	def row(self, row: list) -> str:
@@ -62,7 +62,7 @@ class Engine():
 		Assemble the row from the already formatted and aligned cell
 		contents are interwoven with the column separators and the final,
 		formatted table line ready to print is returned.
-		\row List of `str`, which are the already converted and aligned.
+		\param row List of `str`, which are the already converted and aligned.
 		"""
 		line = self.linestart + self.pad_right \
 			+ row[0] \
@@ -75,19 +75,27 @@ class Engine():
 		This method is used to modify the determined column widths, as
 		some engines require a minimum column width (e.g., \ref markdown).
 		But most engines will just return the list of column widths.
-		\param col_width List of `int`, which are the column widths in charaters.
+		\param col_widths List of `int`, which are the column widths in charaters.
 		\param align List of `str`, specifying the aligment of each column.
 		"""
 		return col_widths
 
 class csv(Engine):
 	"""
-	Character separated table.
-	Default is the 
+	Character separated table, defaulting to the comma (`","`).
+	
+	This engine has no built table rules.
+	The \ref rules.ExtraRule is used to insert a blank line.
+	
+	Start th 
 	"""
 	def __init__(self, itemsep: str = ",", **kwargs):
 		"""
-		\todo
+		Construct the csv engine.
+		\param itemsep \copydoc itemsep
+			This defaults to the comma (`","`).
+		\param kwargs Additional keyword arguments, passed to the
+			superclass' constructor.
 		"""
 		super().__init__(
 			linestart = "",
@@ -97,7 +105,10 @@ class csv(Engine):
 			**kwargs)
 	def rule(self, widths: list, align: str, rule_type: str):
 		"""
-		\todo
+		\copydoc Engine.rule()
+		
+		This engine has no built table rules.
+		The \ref rules.ExtraRule is used to insert a blank line. 
 		"""
 		if isinstance(rule_type, ExtraRule):
 			return ""
@@ -106,18 +117,35 @@ class csv(Engine):
 
 class tsv(csv):
 	"""
-	\todo
+	A variation of the \ref csv, but with the tab (`"\t"`) as column separator.
+	
+	\copydetails csv
 	"""
 	def __init__(self, itemsep: str = "\t", **kwargs):
+		"""
+		Construct the tsv engine.
+		\param itemsep \copydoc itemsep
+			This defaults to the tab (`"\t"`).
+		\param kwargs Additional keyword arguments, passed to the
+			superclass' constructor.
+		"""
 		super().__init__(itemsep, **kwargs)
 
 class latex(Engine):
 	"""
-	\todo
+	A LaTeX table, columns are separated by the ampersand (`"&"`) and the
+	the lines are ended with double backslash (`"\\"`).
+	
+	The table rules use the rules provided by [booktabs](https://ctan.org/pkg/booktabs/).
+	Before the tabular part, the table is started with `"\topule"`, the
+	header line is separated by `"\midrule"` and the tabular part is
+	closed with `"\bottomrule"`.
+	The \ref rules.ExtraRule is translated into `"\addlinespace"`, which
+	results in a small vertical space between two rows.
 	"""
 	def __init__(self, **kwargs):
 		"""
-		\todo
+		Construct the latex engine.
 		"""
 		super().__init__(linestart="",
 			firstsep="&",
@@ -126,7 +154,14 @@ class latex(Engine):
 			**kwargs)
 	def rule(self, widths: list, align: list, rule_type: str):
 		"""
-		\todo
+		\copydoc Engine.rule()
+		
+		The table rules use the rules provided by[booktabs](https://ctan.org/pkg/booktabs/).
+		Before the tabular part, the table is started with `"\topule"`,
+		the header line is separated by `"\midrule"` and the tabular part
+		is closed with `"\bottomrule"`.
+		The \ref rules.ExtraRule is translated into `"\addlinespace"`,
+		which results in a small vertical space between two rows.
 		"""
 		if isinstance(rule_type, TopRule):
 			return r"\toprule"
@@ -140,6 +175,10 @@ class latex(Engine):
 			return None
 
 class markdown(Engine):
+	"""
+	A Markdown table.
+	
+	"""
 	def __init__(self, **kwargs):
 		"""
 		\todo
