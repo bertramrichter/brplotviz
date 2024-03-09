@@ -108,18 +108,52 @@ def print_table(table: list,
 	| `head_col 1`	| `1,0`	| `1,1`	|
 	"""
 	engine = get_engine(engine)
-	# make a deepcopy to not modify the original data
-	table = copy.deepcopy(table)
-	# convert the table to a list of lists (e.g., from numpy arrays)
-	table = [list(row) if not isinstance(row, Rule) else row for row in table]
-	if transpose_data:
-		table = _transpose_data(table)
+	# Make a deepcopy to not modify the original data
+	# Convert the table to a list of lists (e.g., from numpy arrays)
+	# Extract extra rules
+	rule_dict = {}
+	clean_table = []
+	for i, row in enumerate(copy.deepcopy(table)):
+		if isinstance(row, Rule):
+			rule_dict[i] = row
+		elif isinstance(row, type) and issubclass(row, Rule):
+			rule_dict[i] = row()
+		else:
+			try:
+				clean_table.append(list(row))
+			except:
+				raise ValueError("Cannot convert {}th entry to list: {}".format(i, row))
+	# Transpose and operate column wise
+	table = clean_table
+	#table = _transpose_data(clean_table)
+	
+	# Sanity checks
+	#clean_table = [list(row) for row in table if not isinstance(row, Rule)]
+	#if head_col is not None:
+	#	assert len(head_col) == len(clean_table), "Length of head_col ({}) and lines in table ({}) do not match".format(len(head_col), len(clean_table))
+	
+	#if head_row is not None:
+	#	lengths = set([len(row) for row in clean_table if not isinstance(row, Rule)])
+		#assert len(lengths) == 1
+		#assert len(head_row) in lengths, "Length of head_row ({}) and lines in table ({}) do not match".format(len(head_row), lengths)
+	# 
 	table = _include_head(table, head_row, head_col, top_left)
 	table = _apply_format(table, formatter)
 	if replacement is not None:
 		table = replace(table, replacement)
 	col_widths = _find_col_width(table)
 	col_widths = engine.modify_col_widths(col_widths, align)
+	
+	# Insert extra rules again
+	#if not transpose_data:
+	#	table = _transpose_data(table)
+	for i, rule in rule_dict.items():
+		if head_row is None:
+			table.insert(i, rule)
+		else:
+			table.insert(i+1, rule)
+	
+	# Compose table as lines of text
 	formatted_lines = []
 	if caption is not None:
 		formatted_lines.append(caption)
@@ -345,7 +379,7 @@ def _align(row, align, col_widths) -> list:
 			alignment = [align_dict[col] for col in align]
 		else:
 			raise ValueError("Wrong alignment type.")
-		aligned = [("{:" + align + str(width) + "}").format(str(entry)) for align, entry, width in zip(alignment, row, col_widths)]
+		aligned = [("{:" + align + str(width) + "}").format(str(entry)) for align, entry, width in itertools.zip_longest(alignment, row, col_widths, fillvalue="")]
 		return aligned
 
 def _find_col_width(table) -> list:
@@ -446,7 +480,7 @@ def _transpose_data(table: list) -> list:
 	Transposes the given table.
 	Columns will become rows and rows will become columns.
 	"""	
-	return list(map(list, zip(*table)))
+	return list(map(list, itertools.zip_longest(*table, fillvalue="")))
 
 def _typeset_lines(table, itemsep, lineend) -> list:
 	"""

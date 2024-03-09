@@ -177,7 +177,6 @@ class latex(Engine):
 class markdown(Engine):
 	"""
 	A Markdown table.
-	
 	"""
 	def __init__(self, **kwargs):
 		"""
