@@ -109,10 +109,12 @@ def print_table(table: list,
 	"""
 	engine = get_engine(engine)
 	# Make a deepcopy to not modify the original data
-	# Convert the table to a list of lists (e.g., from numpy arrays)
-	# Extract extra rules
-	rule_dict = {}
+	head_col = copy.deepcopy(head_col)
+	head_row = copy.deepcopy(head_row)
+	# Convert the table to a list of lists (e.g., from numpy arrays) and
+	# extract extra rules
 	clean_table = []
+	rule_dict = {}
 	for i, row in enumerate(copy.deepcopy(table)):
 		if isinstance(row, Rule):
 			rule_dict[i] = row
@@ -123,56 +125,56 @@ def print_table(table: list,
 				clean_table.append(list(row))
 			except:
 				raise ValueError("Cannot convert {}th entry to list: {}".format(i, row))
-	# Transpose and operate column wise
 	table = clean_table
-	#table = _transpose_data(clean_table)
-	
-	# Sanity checks
-	#clean_table = [list(row) for row in table if not isinstance(row, Rule)]
-	#if head_col is not None:
-	#	assert len(head_col) == len(clean_table), "Length of head_col ({}) and lines in table ({}) do not match".format(len(head_col), len(clean_table))
-	#if head_row is not None:
-	#	lengths = set([len(row) for row in clean_table if not isinstance(row, Rule)])
-		#assert len(lengths) == 1
-		#assert len(head_row) in lengths, "Length of head_row ({}) and lines in table ({}) do not match".format(len(head_row), lengths)
-	# 
+	# Transpose the body data, if requested
+	if transpose_data:
+		table = _transpose_data(table)
+	# Convert to table of str
 	table = _apply_format(table, formatter)
-	table = _include_head(table, head_row, head_col, top_left)
+	if head_row is not None:
+		table.insert(0, head_row)
+	if head_row is not None and head_col is not None:
+		head_col.insert(0, top_left)
+	# Transpose and operate column wise
+	table = _transpose_data(table)
+	# Add header column
+	if head_col is not None:
+		table.insert(0, head_col)
 	if replacement is not None:
 		table = replace(table, replacement)
 	col_widths = _find_col_width(table)
-	col_widths = engine.modify_col_widths(col_widths, align)
-	
+	alignments = _get_aligments(table, align)
+	col_widths = engine.modify_col_widths(col_widths, alignments)
+	table =_align(table, alignments, col_widths)
+	# Transpose again
+	table = _transpose_data(table)
 	# Insert extra rules again
-	#if not transpose_data:
-	#	table = _transpose_data(table)
-	for i, rule in rule_dict.items():
-		if head_row is None:
-			table.insert(i, rule)
-		else:
-			table.insert(i+1, rule)
-	
+	if not transpose_data:
+		# but only if the data was now extra transposed
+		for i, rule in rule_dict.items():
+			if head_row is None:
+				table.insert(i, rule)
+			else:
+				table.insert(i+1, rule)
 	# Compose table as lines of text
 	formatted_lines = []
 	if caption is not None:
 		formatted_lines.append(caption)
-	_rule(formatted_lines, TopRule(), engine, col_widths, align)
-	row = _align(table[0], align, col_widths)
-	formatted_lines.append(engine.row(row))
-	_rule(formatted_lines, HeadRule(), engine, col_widths, align)
+	_rule(formatted_lines, TopRule(), engine, col_widths, alignments)
+	formatted_lines.append(engine.row(table[0]))
+	_rule(formatted_lines, HeadRule(), engine, col_widths, alignments)
 	row_count = len(table)
 	for row_nr, row in enumerate(table[1::]):
 		if not isinstance(row, Rule):
-			row = _align(row, align, col_widths)
 			formatted_lines.append(engine.row(row))
-			rule = engine.rule(col_widths, align, row)
+			rule = engine.rule(col_widths, alignments, MidRule)
 			if rule is not None:
 				formatted_lines.append(rule)
 			if not row_nr == row_count-1:
-				_rule(formatted_lines, MidRule(), engine, col_widths, align)
+				_rule(formatted_lines, MidRule(), engine, col_widths, alignments)
 		else:
-			_rule(formatted_lines, row, engine, col_widths, align)
-	rule = engine.rule(col_widths, align, BotRule())
+			_rule(formatted_lines, row, engine, col_widths, alignments)
+	rule = engine.rule(col_widths, alignments, BotRule())
 	if rule is not None:
 		formatted_lines.append(rule)
 	# Output
@@ -353,8 +355,9 @@ def _apply_format(table, formatter) -> list:
 			str_table.append(row)
 	return str_table
 
-def _align(row, align, col_widths) -> list:
+def _align(table, alignments, col_widths) -> list:
 	"""
+	\todo Update Documentation
 	Brings the cells of a column to the same width for all columns.
 	The content in the cell is aligned according to `align`.
 	\param table A list of lists of str.
@@ -369,27 +372,38 @@ def _align(row, align, col_widths) -> list:
 	\return Returns a ist of lists of str, where each column has the same width.
 	"""
 	align_dict = {"l": "<", "c": "^", "r": ">"}
-	if align is None:
-		return row
-	else:
-		if isinstance(align, str):
-			alignment = [align_dict[align]]*len(row)
-		elif isinstance(align, list):
-			alignment = [align_dict[col] for col in align]
-		else:
-			raise ValueError("Wrong alignment type.")
-		aligned = [("{:" + align + str(width) + "}").format(str(entry)) for align, entry, width in itertools.zip_longest(alignment, row, col_widths, fillvalue="")]
-		return aligned
+	align_code = [align_dict[a] for a in alignments]
+	aligned = []
+	for align, col, width in zip(align_code, table, col_widths):
+		aligned_col = [("{:" + align + str(width) + "}").format(str(entry)) for entry in col]
+		aligned.append(aligned_col)
+	return aligned
 
 def _find_col_width(table) -> list:
 	"""
-	For each column in the table, width of the column is determined by the widest cell in the respective column.
+	For each column in the table, the width of the column is determined
+	by the widest cell in the respective column.
 	\param table Table for which the column widths should be determined.
-		It is assumed, that the original table is converted by \ref _apply_format() prior to it.
+		It is assumed, that:
+		- the original table is transposed (each entry is a column) and
+		- everything is converted by \ref _apply_format().
 	"""
-	table_tmp = [row for row in table if not isinstance(row, Rule)]
-	col_list = _transpose_data(table_tmp)
-	return [max([len(entry) for entry in col]) for col in col_list]
+	return [max([len(entry) for entry in col]) for col in table]
+
+def _get_aligments(table, align) -> list:
+	"""
+	\todo Document
+	"""
+	if align is None:
+		return align
+	else:
+		if isinstance(align, str):
+			alignment = [align]*len(table)
+		elif isinstance(align, (list, tuple)):
+			alignment = [a for col, a in itertools.zip_longest(table, align, fillvalue="l")]
+		else:
+			raise ValueError("Wrong alignment type.")
+	return alignment
 
 def _get_formatter_table(table, formatter) -> list:
 	"""
@@ -478,6 +492,7 @@ def _transpose_data(table: list) -> list:
 	"""
 	Transposes the given table.
 	Columns will become rows and rows will become columns.
+	\todo Document: fill up missing cells
 	"""	
 	return list(map(list, itertools.zip_longest(*table, fillvalue="")))
 

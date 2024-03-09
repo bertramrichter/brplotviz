@@ -7,6 +7,7 @@ which in turn define the look of the table.
 \date 2024
 """
 
+import itertools
 from .rules import *
 
 class Engine():
@@ -201,7 +202,7 @@ class markdown(Engine):
 			if align is None or isinstance(align, str):
 				align = [align] * len(widths)
 			rule = []
-			for w, alignment in zip(widths, align):
+			for w, alignment in itertools.zip_longest(widths, align, fillvalue=""):
 				if alignment is None:
 					rule.append("-"*max(3, w))
 				if alignment == "l": 
