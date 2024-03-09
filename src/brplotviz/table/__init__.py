@@ -131,14 +131,13 @@ def print_table(table: list,
 	#clean_table = [list(row) for row in table if not isinstance(row, Rule)]
 	#if head_col is not None:
 	#	assert len(head_col) == len(clean_table), "Length of head_col ({}) and lines in table ({}) do not match".format(len(head_col), len(clean_table))
-	
 	#if head_row is not None:
 	#	lengths = set([len(row) for row in clean_table if not isinstance(row, Rule)])
 		#assert len(lengths) == 1
 		#assert len(head_row) in lengths, "Length of head_row ({}) and lines in table ({}) do not match".format(len(head_row), lengths)
 	# 
-	table = _include_head(table, head_row, head_col, top_left)
 	table = _apply_format(table, formatter)
+	table = _include_head(table, head_row, head_col, top_left)
 	if replacement is not None:
 		table = replace(table, replacement)
 	col_widths = _find_col_width(table)
