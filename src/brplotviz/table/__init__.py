@@ -16,20 +16,24 @@ from .engines import *
 from . import rules
 from .rules import *
 
-def get_engine(engine):
+def get_engine(engine, **kwargs: dict):
 	"""
 	Return the engine or retrieve an engine object by its class name.
+	\param engine
 	This can be either an instance of the a subclass of \ref engines.Engine or a `str`.
 	If `engine` is an instance of a subclass, it is returned unchanged.
 	If `engine` is a string it is assumed to be a class name, and an
 	instance of that class with default settings is returned.
 	Note that the class name is case-insensitive.
+	\param kwargs Keyword arguments, passed to the constructor of the engine.
 	"""
 	if isinstance(engine, Engine):
 		return engine
+	elif isinstance(engine, type) and issubclass(engine, Engine):
+		return engine(**kwargs)
 	elif isinstance(engine, str):
 		try: 
-			return getattr(engines, engine.lower())()
+			return getattr(engines, engine.lower())(**kwargs)
 		except:
 			raise RuntimeError("Unknown table layout engine: {}".format(engine))
 
@@ -46,6 +50,7 @@ def print_table(table: list,
 		show: bool = None,
 		transpose_data: bool = False,
 		return_lines: bool = False,
+		engine_kwargs: dict = None,
 		*args, **kwargs):
 	"""
 	Prints the table in a nice format.
@@ -85,8 +90,11 @@ def print_table(table: list,
 		Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
 	\param return_lines Switch, whether the list of formatted lines should be returned. Defaults to `False`.
+	\param engine_kwargs Keyword arguments, passed to the constructor of the engine.
+		This can be used to influence some aspects of the table.
+		See \ref engines.Engine.__init__() for more details.
 	\param *args Positional arguments, will be ignored.
-	\param *kwargs Keyword arguments, will be ignored.
+	\param **kwargs Keyword arguments, will be ignored.
 	
 	The layout with both `head_row` and `head_col` specified will be:
 	| `top_left`	| `head_row 0`	| `head_row 1`	|
@@ -106,7 +114,8 @@ def print_table(table: list,
 	| `head_col 0`	| `0,0`	| `0,1`	|
 	| `head_col 1`	| `1,0`	| `1,1`	|
 	"""
-	engine = get_engine(engine)
+	engine_kwargs = engine_kwargs if engine_kwargs is not None else {}
+	engine = get_engine(engine, **engine_kwargs)
 	# Make a deepcopy to not modify the original data
 	head_col = copy.deepcopy(head_col)
 	head_row = copy.deepcopy(head_row)
@@ -211,7 +220,9 @@ def print_table_LaTeX(table: list,
 		- `"l"` (default): All columns are left-aligned.
 		- `"c"`: All columns are centered.
 		- `"r"`: All columns are right-aligned.
-		- `None`: No alignment of columns is done.
+		- `""` (empty strin): Behaves like `"l"`, but might result in
+			omission of alignment indication in some table styles.
+		- `None`: Alignment of columns is deactivated.
 		- List of afforementioned options: Each column can have it's own alignment.
 			An alignment for `head_col` needs to be included as well, if `head_col` is provided.
 	\param caption Caption of the table. Will used as the content of LaTeX's `\caption{<caption>}` above the table.
@@ -365,8 +376,8 @@ def _align(table, alignments, col_widths) -> list:
 	\param col_widths List of columns' widths.
 	\return Returns table where each cell in a column has the same width.
 	"""
-	align_dict = {"l": "<", "c": "^", "r": ">"}
-	align_code = [align_dict[a] for a in alignments]
+	align_dict = {"l": "<", "c": "^", "r": ">", "": ""}
+	align_code = [align_dict.get(a, "") for a in alignments]
 	aligned = []
 	for align, col, width in zip(align_code, table, col_widths):
 		aligned_col = [("{:" + align + str(width) + "}").format(str(entry)) for entry in col]

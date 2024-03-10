@@ -205,7 +205,7 @@ class markdown(Engine):
 				align = [align] * len(widths)
 			rule = []
 			for w, alignment in itertools.zip_longest(widths, align, fillvalue=""):
-				if alignment is None:
+				if alignment is None or alignment == "":
 					rule.append("-"*max(3, w))
 				if alignment == "l": 
 					rule.append(":" + "-"*max(3, w-1))

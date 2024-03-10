@@ -58,5 +58,5 @@ for engine in engines:
 	
 table._output_table(
 	formatted_lines=file_content,
-	file="./doc/engine_overview.md",
+	file="./engine_overview.md",
 	show=True)
