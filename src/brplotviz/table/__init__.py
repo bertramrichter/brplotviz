@@ -1,8 +1,9 @@
 
 """
 Contains table printing functionalities.
+
 \author Bertram Richter
-\date 2022
+\date 2024
 """
 
 import codecs
@@ -33,7 +34,7 @@ def get_engine(engine):
 			raise RuntimeError("Unknown table layout engine: {}".format(engine))
 
 def print_table(table: list,
-		engine,
+		engine: engines.Engine,
 		head_col: list = None,
 		head_row: list = None,
 		top_left: str = "",
@@ -49,6 +50,8 @@ def print_table(table: list,
 	"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
+	\param engine This is the engine specifying the table's style.
+		See \ref engines for available options.
 	\param head_col List of row heads, printed as a column infront of rest of the columns, if not left `None` (default).
 	\param head_row List of column heads, printed as a line before the rest of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
@@ -62,8 +65,6 @@ def print_table(table: list,
 			An alignment for `head_col` needs to be included as well, if `head_col` is provided.
 	\param caption Title of the table.
 		Will be printed on a separate line directly above the table, if not `None` (default).
-	\param itemsep String, that is put in-between items of the same line. Defaults to `"\t"`.
-	\param lineend String that is put at the end of the line. Defaults to `""`.
 	\param file Path to the file in which the table is written to.
 		Defaults to `None`, which means the table is printed on screen instead of saved to disk.
 		If a valid path is given, the tables is written to this file.
@@ -73,8 +74,6 @@ def print_table(table: list,
 		- String according to the Format Specification Mini-Language: The specified format is applied to all cells.
 		- List of format strings: The formatting is assumed to be applicable to all rows.
 		- List of list of format strings: It is assumed, that each cell is provided with an individual format string.
-	\param head_sep If not `None` (default), this is put on an additional line between the head_row and the body of the table.
-		This has only an effect, if `head_row` is not `None` aswell.
 	\param replacement This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
 		Example: to replace all `NaN` (not a number) by em-dashes and all 0 by `"nothing"`: `{"nan": "---", 0: "nothing"}`
 		Defaults to `None` (no replacement is attempted).
@@ -128,7 +127,7 @@ def print_table(table: list,
 	table = clean_table
 	# Transpose the body data, if requested
 	if transpose_data:
-		table = _transpose_data(table)
+		table = _transpose(table)
 	# Convert to table of str
 	table = _apply_format(table, formatter)
 	if head_row is not None:
@@ -136,18 +135,18 @@ def print_table(table: list,
 	if head_row is not None and head_col is not None:
 		head_col.insert(0, top_left)
 	# Transpose and operate column wise
-	table = _transpose_data(table)
+	table = _transpose(table)
 	# Add header column
 	if head_col is not None:
 		table.insert(0, head_col)
 	if replacement is not None:
 		table = replace(table, replacement)
 	col_widths = _find_col_width(table)
-	alignments = _get_aligments(table, align)
+	alignments = _get_alignments(table, align)
 	col_widths = engine.modify_col_widths(col_widths, alignments)
 	table =_align(table, alignments, col_widths)
 	# Transpose again
-	table = _transpose_data(table)
+	table = _transpose(table)
 	# Insert extra rules again
 	if not transpose_data:
 		# but only if the data was now extra transposed
@@ -207,6 +206,7 @@ def print_table_LaTeX(table: list,
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided.
 		Defaults to `""`.
 	\param align Specifies the alignment options of the columns.
+		Missing entries are filled up with left-alignment (`"l"`).
 		Available options:
 		- `"l"` (default): All columns are left-aligned.
 		- `"c"`: All columns are centered.
@@ -357,19 +357,13 @@ def _apply_format(table, formatter) -> list:
 
 def _align(table, alignments, col_widths) -> list:
 	"""
-	\todo Update Documentation
-	Brings the cells of a column to the same width for all columns.
-	The content in the cell is aligned according to `align`.
-	\param table A list of lists of str.
-		It is assumed, that the original table is converted by \ref _apply_format() prior to it.
-	\param align Specifies the alignment options of the columns. Available options:
-		- `"l"` (default): All columns are left-aligned.
-		- `"c"`: All columns are centered.
-		- `"r"`: All columns are right-aligned.
-		- `None`: No alignment of columns is done.
-		- List of afforementioned options: Each column can have it's own alignment.
-			An alignment for `head_col` needs to be included as well, if `head_col` is provided.
-	\return Returns a ist of lists of str, where each column has the same width.
+	Brings the cells in a column to the same width for all columns in table.
+	The content in the cell is aligned according to `alignments`.
+	\param table A list of columns (the table is transposed by \ref _transpose()).
+		Table cells are converted to `str` by \ref _apply_format().
+	\param alignments The list of aligmnent as completed by \ref _get_alignments().
+	\param col_widths List of columns' widths.
+	\return Returns table where each cell in a column has the same width.
 	"""
 	align_dict = {"l": "<", "c": "^", "r": ">"}
 	align_code = [align_dict[a] for a in alignments]
@@ -390,9 +384,12 @@ def _find_col_width(table) -> list:
 	"""
 	return [max([len(entry) for entry in col]) for col in table]
 
-def _get_aligments(table, align) -> list:
+def _get_alignments(table, align) -> list:
 	"""
-	\todo Document
+	The the aligment codes form the table's columns.
+	Potentially missing column alignment are filled up with left alignment.
+	\param table List of lists. An entry of `table` is a column.
+	\param align See parameter description in \ref print_table()
 	"""
 	if align is None:
 		return align
@@ -479,20 +476,25 @@ def _output_table(formatted_lines, file, show):
 		for line in formatted_lines:
 			print(line)
 
-def _rule(formatted_lines, rule, engine, col_widths, align):
+def _rule(formatted_lines, rule, engine, col_widths, alignments):
 	"""
 	Add a rule.
-	\todo Document
+	\param formatted_lines The alread fully typeset lines of the table.
+	\param rule A \ref rules.Rule, for which the engine is requested to
+		draw a rule.
+	\param engine The engine to draw a rule.
+	\param col_widths A list of the columns' widths.
+	\param alignments A full aligment list (see \ref _get_alignments()).
 	"""
-	rule = engine.rule(col_widths, align, rule)
+	rule = engine.rule(col_widths, alignments, rule)
 	if rule is not None:
 		formatted_lines.append(rule)
 
-def _transpose_data(table: list) -> list:
+def _transpose(table: list) -> list:
 	"""
-	Transposes the given table.
-	Columns will become rows and rows will become columns.
-	\todo Document: fill up missing cells
+	Transposes the given table, columns become rows and rows become columns.
+	Missing cells (if a row has fewer entries than other rows) will be
+	fill up with empty strings (`""`).
 	"""	
 	return list(map(list, itertools.zip_longest(*table, fillvalue="")))
 

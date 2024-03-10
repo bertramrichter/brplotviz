@@ -3,6 +3,8 @@
 This module contains the class definitions for table engines, each of
 which in turn define the look of the table.
 
+See \ref doc/engine_overview.md for an overview of all available styles.
+
 \author Bertram Richter
 \date 2024
 """
@@ -146,7 +148,7 @@ class latex(Engine):
 	"""
 	def __init__(self, **kwargs):
 		"""
-		Construct the latex engine.
+		Construct the LaTeX engine.
 		"""
 		super().__init__(linestart="",
 			firstsep="&",
@@ -181,7 +183,7 @@ class markdown(Engine):
 	"""
 	def __init__(self, **kwargs):
 		"""
-		\todo
+		Construct the Markdown engine.
 		"""
 		super().__init__(
 			linestart = "|",
@@ -196,7 +198,7 @@ class markdown(Engine):
 		self.ruleend = "|",
 	def rule(self, widths: list, align: str, rule_type: str):
 		"""
-		\todo
+		Markdown only draws the \ref rules.HeadRule.
 		"""
 		if isinstance(rule_type, HeadRule):
 			if align is None or isinstance(align, str):
@@ -214,7 +216,16 @@ class markdown(Engine):
 			return self.row(rule)
 	def modify_col_widths(self, col_widths, align):
 		"""
-		\todo Document
+		\copydoc Engine.modify_col_widths()
+		
+		Markdown requires following column widths:
+		
+		| Alignment | Width |
+		|:----------|:-----:|
+		| left      |   4   |
+		| centered  |   5   |
+		| right     |   4   |
+		| None      |   3   |
 		"""
 		if align is None or isinstance(align, str):
 			align = [align] * len(col_widths)
