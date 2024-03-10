@@ -90,7 +90,7 @@ To build the documentation, run `doxygen` in this directory to generate it to th
 
 # Licence and Copyright
 **Author:** Bertram Richter  
-**Copyright:** Copyright by the author, 2023.  
+**Copyright:** Copyright by the author, 2024.  
 **License:** This software is released under GPLv3, see [LICENSE](./LICENSE) for details
 
 # Dependencies

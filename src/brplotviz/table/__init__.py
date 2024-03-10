@@ -38,7 +38,7 @@ def get_engine(engine, **kwargs: dict):
 			raise RuntimeError("Unknown table layout engine: {}".format(engine))
 
 def print_table(table: list,
-		engine: engines.Engine,
+		engine: engines.Engine = "csv",
 		head_col: list = None,
 		head_row: list = None,
 		top_left: str = "",
@@ -56,7 +56,7 @@ def print_table(table: list,
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
 	\param engine This is the engine specifying the table's style.
-		See \ref engines for available options.
+		Defaults to `"csv"`, see \ref engines for available options.
 	\param head_col List of row heads, printed as a column infront of rest of the columns, if not left `None` (default).
 	\param head_row List of column heads, printed as a line before the rest of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
