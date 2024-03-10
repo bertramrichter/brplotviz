@@ -16,7 +16,10 @@ from .engines import *
 from . import rules
 from .rules import *
 
-def get_engine(engine, **kwargs: dict):
+def get_engine(
+		engine,
+		**kwargs: dict,
+		) -> engines.Engine:
 	"""
 	Return the engine or retrieve an engine object by its class name.
 	\param engine
@@ -38,7 +41,7 @@ def get_engine(engine, **kwargs: dict):
 			raise RuntimeError("Unknown table layout engine: {}".format(engine))
 
 def print_table(table: list,
-		engine: engines.Engine = "csv",
+		engine = "csv",
 		head_col: list = None,
 		head_row: list = None,
 		top_left: str = "",
@@ -46,7 +49,7 @@ def print_table(table: list,
 		caption: str = None,
 		file: str = None,
 		formatter = None,
-		replacement: tuple = None,
+		replacement: dict = None,
 		show: bool = None,
 		transpose_data: bool = False,
 		return_lines: bool = False,
@@ -93,8 +96,8 @@ def print_table(table: list,
 	\param engine_kwargs Keyword arguments, passed to the constructor of the engine.
 		This can be used to influence some aspects of the table.
 		See \ref engines.Engine.__init__() for more details.
-	\param *args Positional arguments, will be ignored.
-	\param **kwargs Keyword arguments, will be ignored.
+	\param *args Additional positional arguments, will be ignored.
+	\param **kwargs Additional keyword arguments, will be ignored.
 	
 	The layout with both `head_row` and `head_col` specified will be:
 	| `top_left`	| `head_row 0`	| `head_row 1`	|
@@ -191,21 +194,21 @@ def print_table(table: list,
 		return formatted_lines
 
 def print_table_LaTeX(table: list,
-					head_row: list = None,
-					head_col: list = None,
-					top_left: str = "",
-					align = "l",
-					caption: str = None,
-					file: str = None,
-					formatter = None,
-					LaTeX_label: str = None,
-					LaTeX_format: str = "l",
-					show: bool = None,
-					replacement: tuple = None,
-					table_head: str = None,
-					transpose_data: bool = False,
-					return_lines: bool = False,
-					*args, **kwargs):
+		head_row: list = None,
+		head_col: list = None,
+		top_left: str = "",
+		align = "l",
+		caption: str = None,
+		file: str = None,
+		formatter = None,
+		LaTeX_label: str = None,
+		LaTeX_format: str = "l",
+		show: bool = None,
+		replacement: dict = None,
+		table_head: str = None,
+		transpose_data: bool = False,
+		return_lines: bool = False,
+		*args, **kwargs):
 	"""
 	Prints the table in a LaTeX format, and it can be copied or input directly into a TeX file.
 	This is a convenience wrapper around \ref print_table().
@@ -256,8 +259,8 @@ def print_table_LaTeX(table: list,
 		Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
 	\param return_lines Switch, whether the list of formatted lines should be returned. Defaults to `False`.
-	\param *args Positional arguments, will be ignored.
-	\param *kwargs Keyword arguments, will be ignored.
+	\param *args Additional positional arguments, will be ignored.
+	\param **kwargs Additional keyword arguments, will be ignored.
 	
 	To use the generated table, add the following code to your preamble:
 	```
@@ -314,7 +317,7 @@ def print_table_LaTeX(table: list,
 			file=None,
 			replacement=replacement,
 			show=False,
-			transpose_data=False,
+			transpose_data=transpose_data,
 			return_lines=True,
 			)
 	formatted_lines.extend(content)
@@ -341,7 +344,7 @@ def replace(table: list, replacement: dict) -> list:
 				row[i] = replacement[entry] if entry in replacement else entry
 	return table
 
-def _apply_format(table, formatter) -> list:
+def _apply_format(table: list, formatter) -> list:
 	"""
 	Converts the entries of the given table into `str`.
 	\param table Table with the original content to be converted.
@@ -366,7 +369,7 @@ def _apply_format(table, formatter) -> list:
 			str_table.append(row)
 	return str_table
 
-def _align(table, alignments, col_widths) -> list:
+def _align(table: list, alignments: list, col_widths: list) -> list:
 	"""
 	Brings the cells in a column to the same width for all columns in table.
 	The content in the cell is aligned according to `alignments`.
@@ -384,7 +387,7 @@ def _align(table, alignments, col_widths) -> list:
 		aligned.append(aligned_col)
 	return aligned
 
-def _find_col_width(table) -> list:
+def _find_col_width(table: list) -> list:
 	"""
 	For each column in the table, the width of the column is determined
 	by the widest cell in the respective column.
@@ -395,7 +398,7 @@ def _find_col_width(table) -> list:
 	"""
 	return [max([len(entry) for entry in col]) for col in table]
 
-def _get_alignments(table, align) -> list:
+def _get_alignments(table: list, align) -> list:
 	"""
 	The the aligment codes form the table's columns.
 	Potentially missing column alignment are filled up with left alignment.
@@ -413,7 +416,7 @@ def _get_alignments(table, align) -> list:
 			raise ValueError("Wrong alignment type.")
 	return alignment
 
-def _get_formatter_table(table, formatter) -> list:
+def _get_formatter_table(table: list, formatter) -> list:
 	"""
 	Get the table of formatting strings.
 	\param formatter Format options. This is flexible with the following options:
@@ -440,7 +443,12 @@ def _get_formatter_table(table, formatter) -> list:
 	else:
 		raise ValueError("Please provide a string with a Format Specification Mini-Language!")
 
-def _include_head(table, head_row, head_col, top_left) -> list:
+def _include_head(
+		table: list,
+		head_row: list,
+		head_col: list,
+		top_left: str,
+		) -> list:
 	"""
 	Insert the header row and header column into the table. 
 	\param table Data, of the table.
@@ -461,7 +469,7 @@ def _include_head(table, head_row, head_col, top_left) -> list:
 			table.insert(0, [str(entry) for entry in head_row])
 	return table
 
-def _output_table(formatted_lines, file, show):
+def _output_table(formatted_lines: list, file: str, show: bool):
 	"""
 	Depending on the options, the list of lines is either written to a file on disk or printed on the screen (or neither).
 	\param formatted_lines List of table lines to be outputted.
@@ -487,7 +495,13 @@ def _output_table(formatted_lines, file, show):
 		for line in formatted_lines:
 			print(line)
 
-def _rule(formatted_lines, rule, engine, col_widths, alignments):
+def _rule(
+		formatted_lines: list,
+		rule: rules.Rule,
+		engine: engines.Engine,
+		col_widths: list,
+		alignments: list
+		):
 	"""
 	Add a rule.
 	\param formatted_lines The alread fully typeset lines of the table.
@@ -508,15 +522,6 @@ def _transpose(table: list) -> list:
 	fill up with empty strings (`""`).
 	"""	
 	return list(map(list, itertools.zip_longest(*table, fillvalue="")))
-
-def _typeset_lines(table, itemsep, lineend) -> list:
-	"""
-	The cells in a row are joined to a single`str`, using the `itemsep` and finished by `lineend`.
-	\param table List of list of str, that will be joined to a list of str, one str per row.
-	\param itemsep String, that is put in-between items of the same line.
-	\param lineend String that is put at the end of the line.
-	"""
-	return [itemsep.join(row) + lineend for row in table]
 
 if __name__ == "__main__":
 	pass

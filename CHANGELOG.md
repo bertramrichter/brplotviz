@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [v0.2.1] – 2024-03-10
+
+### Changed
+- Fix bug where `print_table_LaTeX()` disrespects `transpose_data`
+- Documentation and type hint improvements
+
 ## [v0.2] – 2024-03-10
 
 ### Added

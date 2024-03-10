@@ -73,7 +73,7 @@ class Engine():
 			+ (self.pad_left + self.itemsep + self.pad_right).join(row[1::]) \
 			+ self.pad_left + self.lineend
 		return line
-	def modify_col_widths(self, col_widths: list, align: list):
+	def modify_col_widths(self, col_widths: list, align: list) -> list:
 		"""
 		This method is used to modify the determined column widths, as
 		some engines require a minimum column width (e.g., \ref markdown).
@@ -106,7 +106,7 @@ class csv(Engine):
 			itemsep = itemsep,
 			lineend = "",
 			**kwargs)
-	def rule(self, widths: list, align: str, rule_type: str):
+	def rule(self, widths: list, align: str, rule_type: str) -> str:
 		"""
 		\copydoc Engine.rule()
 		
@@ -120,7 +120,7 @@ class csv(Engine):
 
 class tsv(csv):
 	"""
-	A variation of the \ref csv, but with the tab (`"\t"`) as column separator.
+	A variation of \ref csv, but with tab (`"\t"`) as column separator.
 	
 	\copydetails csv
 	"""
@@ -155,7 +155,7 @@ class latex(Engine):
 			itemsep="&",
 			lineend=r"\\",
 			**kwargs)
-	def rule(self, widths: list, align: list, rule_type: str):
+	def rule(self, widths: list, align: list, rule_type: str) -> str:
 		"""
 		\copydoc Engine.rule()
 		
@@ -196,7 +196,7 @@ class markdown(Engine):
 		self.firstrulesep = "|",
 		self.rulesep = "|",
 		self.ruleend = "|",
-	def rule(self, widths: list, align: str, rule_type: str):
+	def rule(self, widths: list, align: str, rule_type: str) -> str:
 		"""
 		Markdown only draws the \ref rules.HeadRule.
 		"""
@@ -214,7 +214,7 @@ class markdown(Engine):
 				elif alignment == "r": 
 					rule.append("-"*max(3, w-1) + ":")
 			return self.row(rule)
-	def modify_col_widths(self, col_widths, align):
+	def modify_col_widths(self, col_widths: list, align: list) -> list:
 		"""
 		\copydoc Engine.modify_col_widths()
 		
