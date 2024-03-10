@@ -1,13 +1,13 @@
 [project]
 name = "brplotviz"
 
-version = "0.1.1"
+version = "0.2"
 
 description = "Plot utilities for outputting plots and tables nicely formatted"
 
 readme = "README.md"
 
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 
 license = {file = "LICENSE"}
 
