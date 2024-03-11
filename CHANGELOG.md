@@ -63,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 First published version.
 
 
-[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.2..master
+[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.2.1..master
+[v0.2.1]: https://github.com/bertramrichter/brplotviz/compare/v0.2..v0.2.1
 [v0.2]: https://github.com/bertramrichter/brplotviz/compare/v0.1.1..v0.2
 [v0.1.1]: https://github.com/bertramrichter/brplotviz/releases/compare/v0.1..v0.1.1
 [v0.1]: https://github.com/bertramrichter/brplotviz/releases/tag/v0.1
