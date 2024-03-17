@@ -1,5 +1,5 @@
 
-"""
+r"""
 This module contains the class definitions for table engines, each of
 which in turn define the look of the table.
 
@@ -13,7 +13,7 @@ import itertools
 from .rules import *
 
 class Engine():
-	"""
+	r"""
 	Base class for a table engine.
 	An engine simply stores the style and look of the table, that is the
 	how the rows and columns are separated and how the frame around the
@@ -28,7 +28,7 @@ class Engine():
 			pad_left: str = "",
 			pad_right: str = "",
 			*args, **kwargs):
-		"""
+		r"""
 		Construct the engine object.
 		\param linestart \copydoc linestart
 		\param firstsep \copydoc firstsep
@@ -52,7 +52,7 @@ class Engine():
 		## This in each cell put between the content and the \ref itemsep to the right. 
 		self.pad_right = pad_right
 	def rule(self, widths: list, align: list, rule_type: Rule) -> str:
-		"""
+		r"""
 		Return a `str` looking like the table rule, based on the type (\ref rules).
 		`None` is returned if no rule should be drawn. 
 		\param widths List of `int` containing the column widths.
@@ -61,7 +61,7 @@ class Engine():
 		"""
 		return None
 	def row(self, row: list) -> str:
-		"""
+		r"""
 		Assemble the row from the already formatted and aligned cell
 		contents are interwoven with the column separators and the final,
 		formatted table line ready to print is returned.
@@ -74,7 +74,7 @@ class Engine():
 			+ self.pad_left + self.lineend
 		return line
 	def modify_col_widths(self, col_widths: list, align: list) -> list:
-		"""
+		r"""
 		This method is used to modify the determined column widths, as
 		some engines require a minimum column width (e.g., \ref markdown).
 		But most engines will just return the list of column widths.
@@ -84,7 +84,7 @@ class Engine():
 		return col_widths
 
 class csv(Engine):
-	"""
+	r"""
 	Character separated table, defaulting to the comma (`","`).
 	
 	This engine has no built table rules.
@@ -93,7 +93,7 @@ class csv(Engine):
 	Start th 
 	"""
 	def __init__(self, itemsep: str = ",", **kwargs):
-		"""
+		r"""
 		Construct the csv engine.
 		\param itemsep \copydoc itemsep
 			This defaults to the comma (`","`).
@@ -107,7 +107,7 @@ class csv(Engine):
 			lineend = "",
 			**kwargs)
 	def rule(self, widths: list, align: str, rule_type: str) -> str:
-		"""
+		r"""
 		\copydoc Engine.rule()
 		
 		This engine has no built table rules.
@@ -119,13 +119,13 @@ class csv(Engine):
 			return None
 
 class tsv(csv):
-	"""
+	r"""
 	A variation of \ref csv, but with tab (`"\t"`) as column separator.
 	
 	\copydetails csv
 	"""
 	def __init__(self, itemsep: str = "\t", **kwargs):
-		"""
+		r"""
 		Construct the tsv engine.
 		\param itemsep \copydoc itemsep
 			This defaults to the tab (`"\t"`).
@@ -135,7 +135,7 @@ class tsv(csv):
 		super().__init__(itemsep, **kwargs)
 
 class latex(Engine):
-	"""
+	r"""
 	A LaTeX table, columns are separated by the ampersand (`"&"`) and the
 	the lines are ended with double backslash (`"\\"`).
 	
@@ -147,7 +147,7 @@ class latex(Engine):
 	results in a small vertical space between two rows.
 	"""
 	def __init__(self, **kwargs):
-		"""
+		r"""
 		Construct the LaTeX engine.
 		"""
 		super().__init__(linestart="",
@@ -156,7 +156,7 @@ class latex(Engine):
 			lineend=r"\\",
 			**kwargs)
 	def rule(self, widths: list, align: list, rule_type: str) -> str:
-		"""
+		r"""
 		\copydoc Engine.rule()
 		
 		The table rules use the rules provided by[booktabs](https://ctan.org/pkg/booktabs/).
@@ -178,11 +178,11 @@ class latex(Engine):
 			return None
 
 class markdown(Engine):
-	"""
+	r"""
 	A Markdown table.
 	"""
 	def __init__(self, **kwargs):
-		"""
+		r"""
 		Construct the Markdown engine.
 		"""
 		super().__init__(
@@ -197,7 +197,7 @@ class markdown(Engine):
 		self.rulesep = "|",
 		self.ruleend = "|",
 	def rule(self, widths: list, align: str, rule_type: str) -> str:
-		"""
+		r"""
 		Markdown only draws the \ref rules.HeadRule.
 		"""
 		if isinstance(rule_type, HeadRule):
@@ -215,7 +215,7 @@ class markdown(Engine):
 					rule.append("-"*max(3, w-1) + ":")
 			return self.row(rule)
 	def modify_col_widths(self, col_widths: list, align: list) -> list:
-		"""
+		r"""
 		\copydoc Engine.modify_col_widths()
 		
 		Markdown requires following column widths:

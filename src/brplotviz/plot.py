@@ -1,5 +1,5 @@
 
-"""
+r"""
 \file
 Contains functions for plotting.
 \author Bertram Richter
@@ -17,7 +17,7 @@ import numpy as np
 from . import styleselect
 
 def single_line(x_values: list, y_values: list, record_name: str = None, *args, **kwargs):
-	"""
+	r"""
 	This function plots a single line graph. It's just a wrapper around \ref mixed_graphs().
 	\param x_values List of floats for the x-axis values. Will be wrapped for \ref mixed_graphs(): `[x_values]` &rarr; `x_table`.
 	\param y_values List of floats for the y-axis values. Will be wrapped for \ref mixed_graphs(): `[y_values]` &rarr; `y_table`.
@@ -31,7 +31,7 @@ def single_line(x_values: list, y_values: list, record_name: str = None, *args, 
 	return multi_line([x_values], [y_values], [record_name], *args, **kwargs)
 
 def single_scatter(x_values: list, y_values: list, record_name: str = None, *args, **kwargs):
-	"""
+	r"""
 	This function plots a single scatter graph. It's just a wrapper around \ref mixed_graphs().
 	\param x_values List of floats for the x-axis values. Will be wrapped for \ref mixed_graphs(): `[x_values]` &rarr; `x_table`.
 	\param y_values List of floats for the y-axis values. Will be wrapped for \ref mixed_graphs(): `[y_values]` &rarr; `y_table`.
@@ -45,7 +45,7 @@ def single_scatter(x_values: list, y_values: list, record_name: str = None, *arg
 	return multi_scatter([x_values], [y_values], [record_name], *args, **kwargs)
 
 def multi_line(x_table, y_table, record_names: list = None, *args, **kwargs):
-	"""
+	r"""
 	This function plots multiple line graphs in a single figure. It's just a wrapper around \ref mixed_graphs().
 	\param x_table List of lists, where each entry (line) is a data record for the x values.
 	\param y_table List of lists, where each entry (line) is a data record for the y values.
@@ -65,7 +65,7 @@ def multi_line(x_table, y_table, record_names: list = None, *args, **kwargs):
 	return mixed_graphs(record_list, *args, **kwargs)
 
 def multi_scatter(x_table, y_table, record_names: list = None, *args, **kwargs):
-	"""
+	r"""
 	This function plots  multiple scatter graphs in a single figure. It's just a wrapper around \ref mixed_graphs().
 	\param x_table List of lists, where each entry (line) is a data record for the x values.
 	\param y_table List of lists, where each entry (line) is a data record for the y values.
@@ -100,7 +100,7 @@ def mixed_graphs(record_list: list,
 				fig = None,
 				ax = None,
 				*args, **kwargs):
-	"""
+	r"""
 	This function plots a number of mixed_graphs, either as line or scatter plot.
 	\param record_list List tuples, with entries like `(<x_values>, <y_values>, <style>, <graphsettings>)`.
 		- `x_values`: List of x-axis values.
@@ -175,7 +175,7 @@ def bar_variable(bins: list,
 				fig = None,
 				ax = None,
 				):
-	"""
+	r"""
 	Plots a bar plot with a variable number of bins.
 	\todo Is it really necessary to be able use a variable number of bars per bin?
 	\param bins Names of data classes e.g. `["a", "b", "c"]`.
@@ -221,7 +221,7 @@ def bar_categories(record_list: list,
 				fig = None,
 				ax = None,
 				*args, **kwargs):
-	"""
+	r"""
 	Plots a bar plot, that groups several data sets according to the given categories.
 	\param record_list List of lists, where each entry (line) is a data record.
 	\param category_names Names of data classes e.g. `["a", "b", "c"]`. This corresponds to record_list column names.
@@ -292,7 +292,7 @@ def matrix_plot(matrix: list,
 				fig = None,
 				ax = None,
 				*args, **kwargs):
-	"""
+	r"""
 	This function visualizes a matrix, coloring the cells according to the value along with a colorbar.
 	\param matrix An array like (e.g. list of lists), that will be shown. 
 	\param xlabel Description of the x-axis. Defaults to `None`.
@@ -343,7 +343,7 @@ def matrix_plot(matrix: list,
 	return fig, ax
 
 def get_figure(fig = None, ax = None, **pltrcParams):
-	"""
+	r"""
 	Generate the figure and axes objects and apply the general setting using \ref set_plot_style_fig().
 	\param fig `matplotlib.figure.Figure`, if `fig` or `ax` is `None` (default), a fresh one is generated.
 	\param ax `matplotlib.axes.Axes`, if `fig` or `ax` is `None` (default), a fresh one is generated.
@@ -373,7 +373,7 @@ def show_save_fig(fig,
 				show: bool = None,
 				closeafter: bool = True,
 				):
-	"""
+	r"""
 	Shows or saves the figure.
 	\param fig Figure to be shown or saved.
 	\param file Path to the file in which the graph is saved.

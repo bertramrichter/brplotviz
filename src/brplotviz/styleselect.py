@@ -1,5 +1,5 @@
 
-"""
+r"""
 \file
 Contains functions for setting the plot style.
 \author Bertram Richter
@@ -11,7 +11,7 @@ from cycler import cycler, concat
 from matplotlib import pyplot as plt
 
 def set_plot_style_fig(**pltrcParams):
-	"""
+	r"""
 	Set the general style for the background and grid.
 	\param **pltrcParams Dictionary of settings to be passed to `plt.rcParams`.
 	"""
@@ -20,7 +20,7 @@ def set_plot_style_fig(**pltrcParams):
 	plt.rcParams.update(settings)
 
 def get_plot_style_line():
-	"""
+	r"""
 	Set the style for line plots.
 	"""
 	color = cycler('color', ["black", "gray"])
@@ -29,7 +29,7 @@ def get_plot_style_line():
 	return plot_style
 
 def get_plot_style_scatter():
-	"""
+	r"""
 	Set the style for scatter plots.
 	"""
 	color = cycler('color', ["black"])
@@ -39,7 +39,7 @@ def get_plot_style_scatter():
 	return plot_style
 
 def get_plot_style_hatch():
-	"""
+	r"""
 	Set the style for bar plots.
 	"""
 	edgecolor = cycler("edgecolor", ["k"])

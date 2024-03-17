@@ -1,5 +1,5 @@
 
-"""
+r"""
 Contains table printing functionalities.
 
 \author Bertram Richter
@@ -20,7 +20,7 @@ def get_engine(
 		engine,
 		**kwargs: dict,
 		) -> engines.Engine:
-	"""
+	r"""
 	Return the engine or retrieve an engine object by its class name.
 	\param engine
 	This can be either an instance of the a subclass of \ref engines.Engine or a `str`.
@@ -55,7 +55,7 @@ def print_table(table: list,
 		return_lines: bool = False,
 		engine_kwargs: dict = None,
 		*args, **kwargs):
-	"""
+	r"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
 	\param engine This is the engine specifying the table's style.
@@ -209,7 +209,7 @@ def print_table_LaTeX(table: list,
 		transpose_data: bool = False,
 		return_lines: bool = False,
 		*args, **kwargs):
-	"""
+	r"""
 	Prints the table in a LaTeX format, and it can be copied or input directly into a TeX file.
 	This is a convenience wrapper around \ref print_table().
 	\param table List of lists (array-like, but can have different data types).
@@ -330,7 +330,7 @@ def print_table_LaTeX(table: list,
 		return formatted_lines
 
 def replace(table: list, replacement: dict) -> list:
-	"""
+	r"""
 	Replace specific values by something else in all cells.
 	\param table Table, for which the content of all cells should be replaced, if they contain something in `source`.
 	\param replacement This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
@@ -345,7 +345,7 @@ def replace(table: list, replacement: dict) -> list:
 	return table
 
 def _apply_format(table: list, formatter) -> list:
-	"""
+	r"""
 	Converts the entries of the given table into `str`.
 	\param table Table with the original content to be converted.
 	\param formatter Format option, see \ref _get_formatter_table().
@@ -370,7 +370,7 @@ def _apply_format(table: list, formatter) -> list:
 	return str_table
 
 def _align(table: list, alignments: list, col_widths: list) -> list:
-	"""
+	r"""
 	Brings the cells in a column to the same width for all columns in table.
 	The content in the cell is aligned according to `alignments`.
 	\param table A list of columns (the table is transposed by \ref _transpose()).
@@ -388,7 +388,7 @@ def _align(table: list, alignments: list, col_widths: list) -> list:
 	return aligned
 
 def _find_col_width(table: list) -> list:
-	"""
+	r"""
 	For each column in the table, the width of the column is determined
 	by the widest cell in the respective column.
 	\param table Table for which the column widths should be determined.
@@ -399,7 +399,7 @@ def _find_col_width(table: list) -> list:
 	return [max([len(entry) for entry in col]) for col in table]
 
 def _get_alignments(table: list, align) -> list:
-	"""
+	r"""
 	The the aligment codes form the table's columns.
 	Potentially missing column alignment are filled up with left alignment.
 	\param table List of lists. An entry of `table` is a column.
@@ -417,7 +417,7 @@ def _get_alignments(table: list, align) -> list:
 	return alignment
 
 def _get_formatter_table(table: list, formatter) -> list:
-	"""
+	r"""
 	Get the table of formatting strings.
 	\param formatter Format options. This is flexible with the following options:
 		- `None` (default) No formatting is done and all entries are printed, as Python does by default.
@@ -435,7 +435,7 @@ def _get_formatter_table(table: list, formatter) -> list:
 			# Assume per-cell formatting
 			return formatter
 		else:
-			# Assume per-row formatting
+			# Assume per-row formattin
 			return [formatter for row in table]
 	elif isinstance(formatter, str):
 		# Assume same formatting for each cell
@@ -449,7 +449,7 @@ def _include_head(
 		head_col: list,
 		top_left: str,
 		) -> list:
-	"""
+	r"""
 	Insert the header row and header column into the table. 
 	\param table Data, of the table.
 	\param head_row First row, of the table, which holds the column names.
@@ -470,7 +470,7 @@ def _include_head(
 	return table
 
 def _output_table(formatted_lines: list, file: str, show: bool):
-	"""
+	r"""
 	Depending on the options, the list of lines is either written to a file on disk or printed on the screen (or neither).
 	\param formatted_lines List of table lines to be outputted.
 	\param file Path to the file in which the table is written to.
@@ -502,7 +502,7 @@ def _rule(
 		col_widths: list,
 		alignments: list
 		):
-	"""
+	r"""
 	Add a rule.
 	\param formatted_lines The alread fully typeset lines of the table.
 	\param rule A \ref rules.Rule, for which the engine is requested to
@@ -516,7 +516,7 @@ def _rule(
 		formatted_lines.append(rule)
 
 def _transpose(table: list) -> list:
-	"""
+	r"""
 	Transposes the given table, columns become rows and rows become columns.
 	Missing cells (if a row has fewer entries than other rows) will be
 	fill up with empty strings (`""`).

@@ -1,9 +1,9 @@
 
-## \file
-## This is an example, how to use the `brplotviz` functions.
-## \author Bertram Richter
-## \date 2022
-## \package example \copydoc example.py
+r"""
+This is an example, how to use the `brplotviz` functions.
+\author Bertram Richter
+\date 2022
+"""
 
 import numpy as np
 import brplotviz
