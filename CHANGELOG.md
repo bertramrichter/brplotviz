@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [v0.2.2] – 2024-03-30
+
+### Fixed
+- Converted all docstrings to raw str, Python 3.12 should not raise
+	syntax warnings regarding invalid excape sequences anymore
+- To prevent crashes, `head_col`, `head_col` and `top_left` are converted to str.
+
 ## [v0.2.1] – 2024-03-10
 
 ### Changed
@@ -63,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 First published version.
 
 
-[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.2.1..master
+[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.2.2..master
+[v0.2.2]: https://github.com/bertramrichter/brplotviz/compare/v0.2.2..v0.2.1
 [v0.2.1]: https://github.com/bertramrichter/brplotviz/compare/v0.2..v0.2.1
 [v0.2]: https://github.com/bertramrichter/brplotviz/compare/v0.1.1..v0.2
 [v0.1.1]: https://github.com/bertramrichter/brplotviz/releases/compare/v0.1..v0.1.1

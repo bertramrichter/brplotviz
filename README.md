@@ -55,6 +55,7 @@ The killer feature here are the possibilities to format the entries either allto
 ```
 brplotviz.table.print_table(
 	table=y_table,
+	engine="csv",
 	head_row=x_list,
 	head_col=record_names,
 	top_left="Values",

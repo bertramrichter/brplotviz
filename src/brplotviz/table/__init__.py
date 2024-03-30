@@ -119,9 +119,11 @@ def print_table(table: list,
 	"""
 	engine_kwargs = engine_kwargs if engine_kwargs is not None else {}
 	engine = get_engine(engine, **engine_kwargs)
-	# Make a deepcopy to not modify the original data
-	head_col = copy.deepcopy(head_col)
-	head_row = copy.deepcopy(head_row)
+	# Convert the entries of the top_left, head column and head row to str.
+	# This will result in a new list, so the original data is not modified.
+	head_col = _apply_format([head_col], formatter=None)[0]
+	head_row = _apply_format([head_row], formatter=None)[0]
+	top_left = "{}".format(top_left)
 	# Convert the table to a list of lists (e.g., from numpy arrays) and
 	# extract extra rules
 	clean_table = []
