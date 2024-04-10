@@ -119,11 +119,6 @@ def print_table(table: list,
 	"""
 	engine_kwargs = engine_kwargs if engine_kwargs is not None else {}
 	engine = get_engine(engine, **engine_kwargs)
-	# Convert the entries of the top_left, head column and head row to str.
-	# This will result in a new list, so the original data is not modified.
-	head_col = _apply_format([head_col], formatter=None)[0]
-	head_row = _apply_format([head_row], formatter=None)[0]
-	top_left = "{}".format(top_left)
 	# Convert the table to a list of lists (e.g., from numpy arrays) and
 	# extract extra rules
 	clean_table = []
@@ -144,9 +139,14 @@ def print_table(table: list,
 		table = _transpose(table)
 	# Convert to table of str
 	table = _apply_format(table, formatter)
+	# Convert the entries of the top_left, head column and head row to str.
+	# This will result in a new list, so the original data is not modified.
+	top_left = "{}".format(top_left)
 	if head_row is not None:
+		head_row = _apply_format([head_row], formatter=None)[0]
 		table.insert(0, head_row)
 	if head_row is not None and head_col is not None:
+		head_col = _apply_format([head_col], formatter=None)[0]
 		head_col.insert(0, top_left)
 	# Transpose and operate column wise
 	table = _transpose(table)
