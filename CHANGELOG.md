@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.3] – 2024-04-13
+
 ### Fixed
 - Fix crash, when either head_col or head_row is omitted (`None`).
 
@@ -72,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 First published version.
 
 
-[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.2.2..master
+[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.2.3..master
+[v0.2.2]: https://github.com/bertramrichter/brplotviz/compare/v0.2.3..v0.2.2
 [v0.2.2]: https://github.com/bertramrichter/brplotviz/compare/v0.2.2..v0.2.1
 [v0.2.1]: https://github.com/bertramrichter/brplotviz/compare/v0.2..v0.2.1
 [v0.2]: https://github.com/bertramrichter/brplotviz/compare/v0.1.1..v0.2
