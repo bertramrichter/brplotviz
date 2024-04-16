@@ -49,6 +49,7 @@ def print_table(table: list,
 		caption: str = None,
 		file: str = None,
 		formatter = None,
+		omit_headrule: bool = False,
 		replacement: dict = None,
 		show: bool = None,
 		transpose_data: bool = False,
@@ -63,6 +64,11 @@ def print_table(table: list,
 	\param head_col List of row heads, printed as a column infront of rest of the columns, if not left `None` (default).
 	\param head_row List of column heads, printed as a line before the rest of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
+	\param omit_headrule Switch to turn off the engine-specific \ref rules.HeadRule.
+		Defaults to `False` (show the rule, if the engine support that).
+		If the engine does not show \ref rules.HeadRule, this setting has no effect.
+		Keep in mind, that this could can invalidate the table format
+		(e.g., Markdown).
 	\param align Specifies the alignment options of the columns.
 		Available options:
 		- `"l"` (default): All columns are left-aligned.
@@ -175,7 +181,8 @@ def print_table(table: list,
 		formatted_lines.append(caption)
 	_rule(formatted_lines, TopRule(), engine, col_widths, alignments)
 	formatted_lines.append(engine.row(table[0]))
-	_rule(formatted_lines, HeadRule(), engine, col_widths, alignments)
+	if not omit_headrule:
+		_rule(formatted_lines, HeadRule(), engine, col_widths, alignments)
 	row_count = len(table)
 	for row_nr, row in enumerate(table[1::]):
 		if not isinstance(row, Rule):
@@ -205,8 +212,9 @@ def print_table_LaTeX(table: list,
 		formatter = None,
 		LaTeX_label: str = None,
 		LaTeX_format: str = "l",
-		show: bool = None,
+		omit_headrule: bool = False,
 		replacement: dict = None,
+		show: bool = None,
 		table_head: str = None,
 		transpose_data: bool = False,
 		return_lines: bool = False,
@@ -248,6 +256,8 @@ def print_table_LaTeX(table: list,
 			By default, all data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format.
 			Make sure, the number of rows is in sync with the data to avoid compilation errors.
+	\param omit_headrule Switch to turn off the engine-specific \ref rules.HeadRule.
+		Defaults to `False`, show the rule.
 	\param replacement  This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
 		Example: to replace all `NaN` (not a number) by em-dashes and all 0 by `"nothing"`: `{"nan": "---", 0: "nothing"}`
 		Defaults to `None` (no replacement is attempted).
@@ -281,8 +291,8 @@ def print_table_LaTeX(table: list,
 	"""
 	# Preparation
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
-	if head_row is not None:
-		top_left = r"\thfl{"+"{}".format(top_left)+r"}"
+	top_left = r"\thfl{"+"{}".format(top_left)+r"}"
+	if head_row is not None and head_row:
 		head_row_format = [r"\thfm{"+"{}".format(entry)+r"}" for entry in head_row]
 		if head_col is None:
 			head_row_format[0] = r"\thfl{"+"{}".format(head_row[0])+r"}"
@@ -303,7 +313,6 @@ def print_table_LaTeX(table: list,
 	else:
 		raise ValueError("LaTeX-format needs to be a str or iterable, not {}".format(type(LaTeX_format)))
 	formatted_lines.append(r"@{}}")
-	formatted_lines.append(r"\toprule")
 	# Add optional head
 	if table_head is not None:
 		formatted_lines.append(table_head)
@@ -317,14 +326,15 @@ def print_table_LaTeX(table: list,
 			caption=None,
 			formatter=formatter,
 			file=None,
+			omit_headrule=omit_headrule,
 			replacement=replacement,
 			show=False,
 			transpose_data=transpose_data,
 			return_lines=True,
+			*args, **kwargs
 			)
 	formatted_lines.extend(content)
 	# Postamble
-	formatted_lines.append(r"\bottomrule")
 	formatted_lines.append(r"\end{tabular}")
 	# Output
 	_output_table(formatted_lines, file, show)
