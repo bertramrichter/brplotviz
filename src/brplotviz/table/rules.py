@@ -52,3 +52,12 @@ class BotRule(Rule):
 	A bottom rule is placed automatically during the typesetting.
 	"""
 	pass
+
+class NoRule(Rule):
+	r"""
+	This rule prevents the engine to draw a rule.
+	The use case is for multi-line cells.
+	NoRules can be placed by manually or are used automatically, when
+	mulit-line cells are encountered. 
+	"""
+	pass

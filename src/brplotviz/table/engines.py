@@ -214,6 +214,8 @@ class markdown(Engine):
 				elif alignment == "r": 
 					rule.append("-"*max(3, w-1) + ":")
 			return self.row(rule)
+		else:
+			return None
 	def modify_col_widths(self, col_widths: list, align: list) -> list:
 		r"""
 		\copydoc Engine.modify_col_widths()
