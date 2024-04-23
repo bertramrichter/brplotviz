@@ -515,32 +515,12 @@ def _output_table(formatted_lines: list, file: str, show: bool):
 		for line in formatted_lines:
 			print(line)
 
-def _rule(
-		formatted_lines: list,
-		rule: rules.Rule,
-		engine: engines.Engine,
-		col_widths: list,
-		alignments: list
-		):
-	r"""
-	Add a rule.
-	\param formatted_lines The alread fully typeset lines of the table.
-	\param rule A \ref rules.Rule, for which the engine is requested to
-		draw a rule.
-	\param engine The engine to draw a rule.
-	\param col_widths A list of the columns' widths.
-	\param alignments A full aligment list (see \ref _get_alignments()).
-	"""
-	rule = engine.rule(col_widths, alignments, rule)
-	if rule is not None:
-		formatted_lines.append(rule)
-
 def _transpose(table: list) -> list:
 	r"""
 	Transposes the given table, columns become rows and rows become columns.
 	Missing cells (if a row has fewer entries than other rows) will be
 	fill up with empty strings (`""`).
-	"""	
+	"""
 	return list(map(list, itertools.zip_longest(*table, fillvalue="")))
 
 if __name__ == "__main__":
