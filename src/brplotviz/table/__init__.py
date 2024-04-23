@@ -179,21 +179,29 @@ def print_table(table: list,
 	formatted_lines = []
 	if caption is not None:
 		formatted_lines.append(caption)
-	_rule(formatted_lines, TopRule(), engine, col_widths, alignments)
+	rule = engine.rule(col_widths, alignments, TopRule())
+	if rule is not None:
+		formatted_lines.append(rule)
 	formatted_lines.append(engine.row(table[0]))
 	if not omit_headrule:
-		_rule(formatted_lines, HeadRule(), engine, col_widths, alignments)
-	row_count = len(table)
-	for row_nr, row in enumerate(table[1::]):
+		rule = engine.rule(col_widths, alignments, HeadRule())
+		if rule is not None:
+			formatted_lines.append(rule)
+	for row in table[1::]:
 		if not isinstance(row, Rule):
 			formatted_lines.append(engine.row(row))
-			rule = engine.rule(col_widths, alignments, MidRule)
+			last_line_is_Rule = False
+			rule = engine.rule(col_widths, alignments, MidRule())
 			if rule is not None:
 				formatted_lines.append(rule)
-			if not row_nr == row_count-1:
-				_rule(formatted_lines, MidRule(), engine, col_widths, alignments)
+				last_line_is_Rule = True
 		else:
-			_rule(formatted_lines, row, engine, col_widths, alignments)
+			rule = engine.rule(col_widths, alignments, row)
+			if rule is not None:
+				formatted_lines.append(rule)
+				last_line_is_Rule = True
+	if last_line_is_Rule:
+		formatted_lines.pop()
 	rule = engine.rule(col_widths, alignments, BotRule())
 	if rule is not None:
 		formatted_lines.append(rule)
@@ -292,7 +300,7 @@ def print_table_LaTeX(table: list,
 	# Preparation
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
 	top_left = r"\thfl{"+"{}".format(top_left)+r"}"
-	if head_row is not None and head_row:
+	if head_row is not None and len(head_row):
 		head_row_format = [r"\thfm{"+"{}".format(entry)+r"}" for entry in head_row]
 		if head_col is None:
 			head_row_format[0] = r"\thfl{"+"{}".format(head_row[0])+r"}"

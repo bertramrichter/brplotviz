@@ -24,7 +24,7 @@ record_names = ["sine", "cosine"]
 # Plotting a single line-graph and a scatter plot is as simple as:
 brplotviz.plot.single_line(x_list, y_list_sin, record_name="sine")
 brplotviz.plot.single_scatter(x_list, y_list_sin, record_name="cosine")
-# Plotting several line plots or mutliple scatter plots is:
+# Plotting several line plots or multiple scatter plots is:
 brplotviz.plot.multi_line(x_table, y_table, record_names)
 brplotviz.plot.multi_scatter(x_table, y_table, record_names)
 ## To mix line and scatter plot we need to construct a list of data record tuples first:
