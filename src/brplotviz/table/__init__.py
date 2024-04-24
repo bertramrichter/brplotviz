@@ -133,9 +133,23 @@ def print_table(table: list,
 		table = _transpose(table)
 	# Convert to table of str
 	table = _apply_format(table, formatter)
+	
 	# \todo Newline treatment here
+	table_lines = []
+	extra_lines = []
+	for row in table:
+		rule = _rule_check(row)
+		if rule:
+			table_lines.append(rule)
+		else:
+			row, n_extra_lines = _newline_split(row)
+			table_lines.extend(row)
+			extra_lines.append(n_extra_lines)
+			table_lines.append(MidRule())
+	table_lines.pop()
 	if not transpose_data:
-		table, rule_dict = _clean_table(table)
+		table, rule_dict = _clean_table(table_lines)
+	
 	# Convert the entries of the top_left, head column and head row to str.
 	# This will result in a new list, so the original data is not modified.
 	# \todo add line enumeration here
@@ -494,6 +508,30 @@ def _include_head(
 		else:
 			table.insert(0, [str(entry) for entry in head_row])
 	return table
+
+def _newline_split(row):
+	max_new_lines = 0
+	extra_lines = [[""]*len(row)]
+	for col_number, cell in enumerate(row):
+		if "\n" not in cell:
+			extra_lines[0][col_number] = cell
+			continue
+		# A newline was found
+		cell_lines = cell.split("\n")
+		max_new_lines = max(len(extra_lines), len(cell_lines))		
+		for i in range(len(extra_lines), max_new_lines):
+			extra_lines.append([""]*len(row))
+		for extra_line_number, sub_cell in enumerate(cell_lines):
+			extra_lines[extra_line_number][col_number] = sub_cell
+	extra_lines_rules = []
+	for line in extra_lines:
+		if _rule_check(line):
+			extra_lines_rules.append(line)
+		else:
+			extra_lines_rules.append(line)
+			extra_lines_rules.append(NoRule())
+	extra_lines_rules.pop()
+	return extra_lines_rules, max_new_lines
 
 def _output_table(formatted_lines: list, file: str, show: bool):
 	r"""
