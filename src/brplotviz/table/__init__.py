@@ -61,7 +61,12 @@ def print_table(table: list,
 	\param table List of lists (array-like, but can have different data types).
 	\param engine This is the engine specifying the table's style.
 		Defaults to `"csv"`, see \ref engines for available options.
-	\param head_col List of row heads, printed as a column infront of rest of the columns, if not left `None` (default).
+	\param head_col Row heads printed as a column infront of rest of the columns.
+		Following options are available:
+		- `None` (default): The table is not prepended with an extra column.
+		- `list`: A list, each entry is a cell.
+		- `"enumerate"`: the rows of the table body are enumerated.
+			The counting starts at 1 after the `head_row` (if present).
 	\param head_row List of column heads, printed as a line before the rest of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
 	\param omit_headrule Switch to turn off the engine-specific \ref rules.HeadRule.
@@ -125,62 +130,63 @@ def print_table(table: list,
 	"""
 	engine_kwargs = engine_kwargs if engine_kwargs is not None else {}
 	engine = get_engine(engine, **engine_kwargs)
-	# Convert the table to a list of lists (e.g., from numpy arrays) and
-	# extract extra rules
 	# Transpose the body data, if requested
 	if transpose_data:
 		table, _ = _clean_table(table)
 		table = _transpose(table)
 	# Convert to table of str
+	clean_table, _ = _clean_table(table)
 	table = _apply_format(table, formatter)
-	
-	# \todo Newline treatment here
-	table_lines = []
-	extra_lines = []
-	for row in table:
-		rule = _rule_check(row)
-		if rule:
-			table_lines.append(rule)
-		else:
-			row, n_extra_lines = _newline_split(row)
-			table_lines.extend(row)
-			extra_lines.append(n_extra_lines)
-			table_lines.append(MidRule())
-	table_lines.pop()
-	if not transpose_data:
-		table, rule_dict = _clean_table(table_lines)
-	
-	# Convert the entries of the top_left, head column and head row to str.
-	# This will result in a new list, so the original data is not modified.
-	# \todo add line enumeration here
 	top_left = "{}".format(top_left)
+	# Enumerate tabele body lines, if requested
+	if isinstance(head_col, str) and head_col.lower() == "enumerate":
+		head_col = list(range(1, len(clean_table)+1))
+	# Add the head_col to the table
+	if head_col is not None:
+		head_col = _apply_format([head_col], formatter=None)[0]
+		head_col_iter = iter(head_col)
+		for line in table:
+			if not _rule_check(line):
+				line.insert(0, next(head_col_iter))
+	# Add the head_row to the table
 	if head_row is not None:
 		head_row = _apply_format([head_row], formatter=None)[0]
+		if head_col is not None:
+			head_row.insert(0, top_left)
 		table.insert(0, head_row)
-	if head_row is not None and head_col is not None:
-		head_col = _apply_format([head_col], formatter=None)[0]
-		head_col.insert(0, top_left)
+	if not omit_headrule:
+		table.insert(1, HeadRule())
+	# New line treatment
+	table_lines = []
+	for i, row in enumerate(table):
+		rule = _rule_check(row)
+		if rule:
+			# Check if the previous rule must be overwritten, the rule
+			# with the lower priority value wins.
+			if i > 0 and _rule_check(table_lines[-1]):
+				last = table_lines.pop()
+				rule = rule if rule.priority < last.priority else last
+			table_lines.append(rule)
+		else:
+			row = _newline_split(row)
+			table_lines.extend(row)
+			table_lines.append(MidRule())
+	table_lines.pop()
+	# Temporarily remove rules to prepare for columnwise operation
+	table, rule_dict = _clean_table(table_lines)
 	# Transpose and operate column wise
 	table = _transpose(table)
-	# Add header column
-	if head_col is not None:
-		table.insert(0, head_col)
 	if replacement is not None:
 		table = replace(table, replacement)
 	col_widths = _find_col_width(table)
 	alignments = _get_alignments(table, align)
 	col_widths = engine.modify_col_widths(col_widths, alignments)
 	table =_align(table, alignments, col_widths)
-	# Transpose again
+	# Transpose again operate row wise again
 	table = _transpose(table)
 	# Insert extra rules again
-	if not transpose_data:
-		# but only if the data was now extra transposed
-		for i, rule in rule_dict.items():
-			if head_row is None:
-				table.insert(i, rule)
-			else:
-				table.insert(i+1, rule)
+	for i, rule in rule_dict.items():
+		table.insert(i, rule)
 	# Compose table as lines of text
 	formatted_lines = []
 	if caption is not None:
@@ -188,26 +194,13 @@ def print_table(table: list,
 	rule = engine.rule(col_widths, alignments, TopRule())
 	if rule is not None:
 		formatted_lines.append(rule)
-	formatted_lines.append(engine.row(table[0]))
-	if not omit_headrule:
-		rule = engine.rule(col_widths, alignments, HeadRule())
-		if rule is not None:
-			formatted_lines.append(rule)
-	for row in table[1::]:
+	for row in table:
 		if not isinstance(row, Rule):
 			formatted_lines.append(engine.row(row))
-			last_line_is_Rule = False
-			rule = engine.rule(col_widths, alignments, MidRule())
-			if rule is not None:
-				formatted_lines.append(rule)
-				last_line_is_Rule = True
 		else:
 			rule = engine.rule(col_widths, alignments, row)
 			if rule is not None:
 				formatted_lines.append(rule)
-				last_line_is_Rule = True
-	if last_line_is_Rule:
-		formatted_lines.pop()
 	rule = engine.rule(col_widths, alignments, BotRule())
 	if rule is not None:
 		formatted_lines.append(rule)
@@ -237,7 +230,12 @@ def print_table_LaTeX(table: list,
 	Prints the table in a LaTeX format, and it can be copied or input directly into a TeX file.
 	This is a convenience wrapper around \ref print_table().
 	\param table List of lists (array-like, but can have different data types).
-	\param head_col List of row heads, printed as a column infront of rest of the columns, if not left `None` (default).
+	\param head_col Row heads printed as a column infront of rest of the columns.
+		Following options are available:
+		- `None` (default): The table is not prepended with an extra column.
+		- `list`: A list, each entry is a cell.
+		- `"enumerate"`: the rows of the table body are enumerated.
+			The counting starts at 1 after the `head_row` (if present).
 	\param head_row List of column heads, printed as a line before the rest of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided.
 		Defaults to `""`.
@@ -297,7 +295,7 @@ def print_table_LaTeX(table: list,
 	If specifies the formatting of the cells in the header row for the whole document.
 	To actually print the table, use the following code snippet:
 	```
-	\begin{table}[hbtp]
+	\begin{table}[!htbp]
 	\centering
 	% <copy table content here> or \input{<filename>}
 	\end{table}
@@ -531,7 +529,7 @@ def _newline_split(row):
 			extra_lines_rules.append(line)
 			extra_lines_rules.append(NoRule())
 	extra_lines_rules.pop()
-	return extra_lines_rules, max_new_lines
+	return extra_lines_rules
 
 def _output_table(formatted_lines: list, file: str, show: bool):
 	r"""
