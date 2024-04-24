@@ -127,26 +127,18 @@ def print_table(table: list,
 	engine = get_engine(engine, **engine_kwargs)
 	# Convert the table to a list of lists (e.g., from numpy arrays) and
 	# extract extra rules
-	clean_table = []
-	rule_dict = {}
-	for i, row in enumerate(copy.deepcopy(table)):
-		if isinstance(row, Rule):
-			rule_dict[i] = row
-		elif isinstance(row, type) and issubclass(row, Rule):
-			rule_dict[i] = row()
-		else:
-			try:
-				clean_table.append(list(row))
-			except:
-				raise ValueError("Cannot convert {}th entry to list: {}".format(i, row))
-	table = clean_table
 	# Transpose the body data, if requested
 	if transpose_data:
+		table, _ = _clean_table(table)
 		table = _transpose(table)
 	# Convert to table of str
 	table = _apply_format(table, formatter)
+	# \todo Newline treatment here
+	if not transpose_data:
+		table, rule_dict = _clean_table(table)
 	# Convert the entries of the top_left, head column and head row to str.
 	# This will result in a new list, so the original data is not modified.
+	# \todo add line enumeration here
 	top_left = "{}".format(top_left)
 	if head_row is not None:
 		head_row = _apply_format([head_row], formatter=None)[0]
@@ -377,7 +369,7 @@ def _apply_format(table: list, formatter) -> list:
 		formatter = itertools.repeat(formatter)
 	str_table = []
 	for row in table:
-		if not isinstance(row, Rule):
+		if not _rule_check(row):
 			str_row = []
 			for format_entry, entry in zip(formatter, row):
 				try:
@@ -406,6 +398,20 @@ def _align(table: list, alignments: list, col_widths: list) -> list:
 		aligned_col = [("{:" + align + str(width) + "}").format(str(entry)) for entry in col]
 		aligned.append(aligned_col)
 	return aligned
+
+def _clean_table(table):
+	clean_table = []
+	rule_dict = {}
+	for i, row in enumerate(copy.deepcopy(table)):
+		rule = _rule_check(row)
+		if rule:
+			rule_dict[i] = row
+		else:
+			try:
+				clean_table.append(list(row))
+			except:
+				raise ValueError("Cannot convert {}th entry to list: {}".format(i, row))
+	return clean_table, rule_dict
 
 def _find_col_width(table: list) -> list:
 	r"""
@@ -514,6 +520,21 @@ def _output_table(formatted_lines: list, file: str, show: bool):
 	if show:
 		for line in formatted_lines:
 			print(line)
+
+def _rule_check(rule):
+	"""
+	Returns an instance of the \ref Rule objects, of `rule`'s (sub)class.
+	If `rule` is not a \ref Rule object, `None` is returned.
+	Apart from conversion to instances, this can be used to check whether
+	`rule` is a \ref Rule object, because \ref Rule objects, when typecast
+	boolean to result in `True`, but `None` typecast to boolean gives `False`. 
+	"""
+	if isinstance(rule, Rule):
+		return rule
+	elif isinstance(rule, type) and issubclass(rule, Rule):
+		return rule()
+	else:
+		return None
 
 def _transpose(table: list) -> list:
 	r"""

@@ -21,6 +21,28 @@ y_table = [y_list_sin, y_list_cos]
 ## List with the names of the records
 record_names = ["sine", "cosine"]
 
+# Printing a table:
+brplotviz.table.print_table(
+	table=y_table,
+	engine="csv",
+	head_row=x_list,
+	head_col=record_names,
+	top_left="Values",
+	caption="Sine and cosine Values",
+	formatter=":.2f",
+	)
+print()
+# Printing the same table, but formatted for LaTeX
+brplotviz.table.print_table_LaTeX(
+	table=y_table,
+	head_row=x_list,
+	head_col=record_names,
+	top_left="Values",
+	formatter=":.2f",
+	caption="Sine and cosine Values",
+	LaTeX_label="sinecosine",
+	)
+
 # Plotting a single line-graph and a scatter plot is as simple as:
 brplotviz.plot.single_line(x_list, y_list_sin, record_name="sine")
 brplotviz.plot.single_scatter(x_list, y_list_sin, record_name="cosine")
@@ -33,24 +55,3 @@ brplotviz.plot.mixed_graphs(record_list)
 # Finally, let's plot a bar chart first with one data record, then with multiple records:
 brplotviz.plot.bar_categories([y_list_sin], category_names=x_list)
 brplotviz.plot.bar_categories(y_table, category_names=x_list, record_names=record_names)
-
-# Printing a table:
-brplotviz.table.print_table(
-	table=y_table,
-	engine="csv",
-	head_row=x_list,
-	head_col=record_names,
-	top_left="Values",
-	caption="Sine and cosine Values",
-	formatter=":.2f",
-	)
-# Printing the same table, but formatted for LaTeX
-brplotviz.table.print_table_LaTeX(
-	table=y_table,
-	head_row=x_list,
-	head_col=record_names,
-	top_left="Values",
-	formatter=":.2f",
-	caption="Sine and cosine Values",
-	LaTeX_label="sinecosine",
-	)
