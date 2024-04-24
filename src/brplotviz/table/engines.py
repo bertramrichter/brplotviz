@@ -240,3 +240,19 @@ class markdown(Engine):
 			else: 
 				new_col_widths.append(max(4, w))
 		return new_col_widths
+
+class test(Engine):
+	def __init__(self, **kwargs):
+		r"""
+		Construct the Test engine.
+		This is only useful for easier debugging.
+		"""
+		super().__init__(linestart="^",
+			firstsep="||",
+			itemsep="|",
+			lineend="$",
+			pad_left=" <",
+			pad_right="> ",
+			)
+	def rule(self, widths: list, align: str, rule_type: str) -> str:
+		return str("---{}---".format(type(rule_type).__name__))
