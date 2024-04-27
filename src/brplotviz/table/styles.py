@@ -10,7 +10,8 @@ See \ref doc/style_overview.md for an overview of all available styles.
 """
 
 import itertools
-from .rules import *
+from . import rules
+#from .rules import *
 
 class Style():
 	r"""
@@ -51,7 +52,7 @@ class Style():
 		self.pad_left = pad_left
 		## This in each cell put between the content and the \ref itemsep to the right. 
 		self.pad_right = pad_right
-	def rule(self, widths: list, align: list, rule_type: Rule) -> str:
+	def rule(self, widths: list, align: list, rule_type: rules.Rule) -> str:
 		r"""
 		Return a `str` looking like the table rule, based on the type (\ref rules).
 		`None` is returned if no rule should be drawn. 
@@ -106,14 +107,14 @@ class csv(Style):
 			itemsep = itemsep,
 			lineend = "",
 			**kwargs)
-	def rule(self, widths: list, align: str, rule_type: str) -> str:
+	def rule(self, widths: list, align: str, rule_type: rules.Rule) -> str:
 		r"""
 		\copydoc Style.rule()
 		
 		This style has no built table rules.
 		The \ref rules.ExtraRule is used to insert a blank line. 
 		"""
-		if isinstance(rule_type, ExtraRule):
+		if isinstance(rule_type, rules.ExtraRule):
 			return ""
 		else:
 			return None
@@ -155,7 +156,7 @@ class latex(Style):
 			itemsep="&",
 			lineend=r"\\",
 			**kwargs)
-	def rule(self, widths: list, align: list, rule_type: str) -> str:
+	def rule(self, widths: list, align: list, rule_type: rules.Rule) -> str:
 		r"""
 		\copydoc Style.rule()
 		
@@ -166,13 +167,13 @@ class latex(Style):
 		The \ref rules.ExtraRule is translated into `"\addlinespace"`,
 		which results in a small vertical space between two rows.
 		"""
-		if isinstance(rule_type, TopRule):
+		if isinstance(rule_type, rules.TopRule):
 			return r"\toprule"
-		elif isinstance(rule_type, HeadRule):
+		elif isinstance(rule_type, rules.HeadRule):
 			return r"\midrule"
-		elif isinstance(rule_type, BotRule):
+		elif isinstance(rule_type, rules.BotRule):
 			return r"\bottomrule"
-		elif isinstance(rule_type, ExtraRule):
+		elif isinstance(rule_type, rules.ExtraRule):
 			return r"\addlinespace"
 		else:
 			return None
@@ -196,11 +197,11 @@ class markdown(Style):
 		self.firstrulesep = "|",
 		self.rulesep = "|",
 		self.ruleend = "|",
-	def rule(self, widths: list, align: str, rule_type: str) -> str:
+	def rule(self, widths: list, align: str, rule_type: rules.Rule) -> str:
 		r"""
 		Markdown only draws the \ref rules.HeadRule.
 		"""
-		if isinstance(rule_type, HeadRule):
+		if isinstance(rule_type, rules.HeadRule):
 			if align is None or isinstance(align, str):
 				align = [align] * len(widths)
 			rule = []

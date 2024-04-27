@@ -14,7 +14,7 @@ import os
 from . import styles
 from .styles import *
 from . import rules
-from .rules import *
+#from .rules import *
 
 def get_style(
 		style,
@@ -155,7 +155,7 @@ def print_table(table: list,
 			head_row.insert(0, top_left)
 		table.insert(0, head_row)
 	if not omit_headrule:
-		table.insert(1, HeadRule())
+		table.insert(1, rules.HeadRule())
 	# New line treatment
 	table_lines = []
 	for i, row in enumerate(table):
@@ -170,7 +170,7 @@ def print_table(table: list,
 		else:
 			row = _newline_split(row)
 			table_lines.extend(row)
-			table_lines.append(MidRule())
+			table_lines.append(rules.MidRule())
 	table_lines.pop()
 	# Temporarily remove rules to prepare for columnwise operation
 	table, rule_dict = _clean_table(table_lines)
@@ -191,17 +191,17 @@ def print_table(table: list,
 	formatted_lines = []
 	if caption is not None:
 		formatted_lines.append(caption)
-	rule = style.rule(col_widths, alignments, TopRule())
+	rule = style.rule(col_widths, alignments, rules.TopRule())
 	if rule is not None:
 		formatted_lines.append(rule)
 	for row in table:
-		if not isinstance(row, Rule):
+		if not isinstance(row, rules.Rule):
 			formatted_lines.append(style.row(row))
 		else:
 			rule = style.rule(col_widths, alignments, row)
 			if rule is not None:
 				formatted_lines.append(rule)
-	rule = style.rule(col_widths, alignments, BotRule())
+	rule = style.rule(col_widths, alignments, rules.BotRule())
 	if rule is not None:
 		formatted_lines.append(rule)
 	# Output
@@ -358,7 +358,7 @@ def replace(table: list, replacement: dict) -> list:
 	if replacement is None:
 		return table
 	for row in table:
-		if not isinstance(row, Rule):
+		if not isinstance(row, rules.Rule):
 			for i, entry in enumerate(row):
 				row[i] = replacement[entry] if entry in replacement else entry
 	return table
@@ -492,7 +492,7 @@ def _include_head(
 	if head_col is not None:
 		head_col_gen = iter(copy.deepcopy(head_col))
 		for row in table:
-			if not isinstance(row, Rule):
+			if not isinstance(row, rules.Rule):
 				row.insert(0, str(next(head_col_gen)))
 	
 	if head_row is not None:
@@ -522,7 +522,7 @@ def _newline_split(row):
 			extra_lines_rules.append(line)
 		else:
 			extra_lines_rules.append(line)
-			extra_lines_rules.append(NoRule())
+			extra_lines_rules.append(rules.NoRule())
 	extra_lines_rules.pop()
 	return extra_lines_rules
 
@@ -560,9 +560,9 @@ def _rule_check(rule):
 	`rule` is a \ref Rule object, because \ref Rule objects, when typecast
 	boolean to result in `True`, but `None` typecast to boolean gives `False`. 
 	"""
-	if isinstance(rule, Rule):
+	if isinstance(rule, rules.Rule):
 		return rule
-	elif isinstance(rule, type) and issubclass(rule, Rule):
+	elif isinstance(rule, type) and issubclass(rule, rules.Rule):
 		return rule()
 	else:
 		return None
