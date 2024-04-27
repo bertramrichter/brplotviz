@@ -1,9 +1,9 @@
 
 r"""
-This module contains the class definitions for table engines, each of
+This module contains the class definitions for table styles, each of
 which in turn define the look of the table.
 
-See \ref doc/engine_overview.md for an overview of all available styles.
+See \ref doc/style_overview.md for an overview of all available styles.
 
 \author Bertram Richter
 \date 2024
@@ -12,10 +12,10 @@ See \ref doc/engine_overview.md for an overview of all available styles.
 import itertools
 from .rules import *
 
-class Engine():
+class Style():
 	r"""
-	Base class for a table engine.
-	An engine simply stores the style and look of the table, that is the
+	Base class for a table style.
+	A style simply stores the style and look of the table, that is the
 	how the rows and columns are separated and how the frame around the
 	tabular data looks like.
 	For defining a custom table look, implement it as subclass to this one.
@@ -29,7 +29,7 @@ class Engine():
 			pad_right: str = "",
 			*args, **kwargs):
 		r"""
-		Construct the engine object.
+		Construct the Style object.
 		\param linestart \copydoc linestart
 		\param firstsep \copydoc firstsep
 		\param itemsep \copydoc itemsep
@@ -76,25 +76,25 @@ class Engine():
 	def modify_col_widths(self, col_widths: list, align: list) -> list:
 		r"""
 		This method is used to modify the determined column widths, as
-		some engines require a minimum column width (e.g., \ref markdown).
-		But most engines will just return the list of column widths.
+		some styles require a minimum column width (e.g., \ref markdown).
+		But most styles will just return the list of column widths.
 		\param col_widths List of `int`, which are the column widths in charaters.
 		\param align List of `str`, specifying the aligment of each column.
 		"""
 		return col_widths
 
-class csv(Engine):
+class csv(Style):
 	r"""
 	Character separated table, defaulting to the comma (`","`).
 	
-	This engine has no built table rules.
+	This style has no table rules.
 	The \ref rules.ExtraRule is used to insert a blank line.
 	
 	Start th 
 	"""
 	def __init__(self, itemsep: str = ",", **kwargs):
 		r"""
-		Construct the csv engine.
+		Construct the csv style.
 		\param itemsep \copydoc itemsep
 			This defaults to the comma (`","`).
 		\param kwargs Additional keyword arguments, passed to the
@@ -108,9 +108,9 @@ class csv(Engine):
 			**kwargs)
 	def rule(self, widths: list, align: str, rule_type: str) -> str:
 		r"""
-		\copydoc Engine.rule()
+		\copydoc Style.rule()
 		
-		This engine has no built table rules.
+		This style has no built table rules.
 		The \ref rules.ExtraRule is used to insert a blank line. 
 		"""
 		if isinstance(rule_type, ExtraRule):
@@ -126,7 +126,7 @@ class tsv(csv):
 	"""
 	def __init__(self, itemsep: str = "\t", **kwargs):
 		r"""
-		Construct the tsv engine.
+		Construct the tsv style.
 		\param itemsep \copydoc itemsep
 			This defaults to the tab (`"\t"`).
 		\param kwargs Additional keyword arguments, passed to the
@@ -134,7 +134,7 @@ class tsv(csv):
 		"""
 		super().__init__(itemsep, **kwargs)
 
-class latex(Engine):
+class latex(Style):
 	r"""
 	A LaTeX table, columns are separated by the ampersand (`"&"`) and the
 	the lines are ended with double backslash (`"\\"`).
@@ -148,7 +148,7 @@ class latex(Engine):
 	"""
 	def __init__(self, **kwargs):
 		r"""
-		Construct the LaTeX engine.
+		Construct the LaTeX style.
 		"""
 		super().__init__(linestart="",
 			firstsep="&",
@@ -157,7 +157,7 @@ class latex(Engine):
 			**kwargs)
 	def rule(self, widths: list, align: list, rule_type: str) -> str:
 		r"""
-		\copydoc Engine.rule()
+		\copydoc Style.rule()
 		
 		The table rules use the rules provided by[booktabs](https://ctan.org/pkg/booktabs/).
 		Before the tabular part, the table is started with `"\topule"`,
@@ -177,13 +177,13 @@ class latex(Engine):
 		else:
 			return None
 
-class markdown(Engine):
+class markdown(Style):
 	r"""
 	A Markdown table.
 	"""
 	def __init__(self, **kwargs):
 		r"""
-		Construct the Markdown engine.
+		Construct the Markdown style.
 		"""
 		super().__init__(
 			linestart = "|",
@@ -218,7 +218,7 @@ class markdown(Engine):
 			return None
 	def modify_col_widths(self, col_widths: list, align: list) -> list:
 		r"""
-		\copydoc Engine.modify_col_widths()
+		\copydoc Style.modify_col_widths()
 		
 		Markdown requires following column widths:
 		
@@ -241,10 +241,10 @@ class markdown(Engine):
 				new_col_widths.append(max(4, w))
 		return new_col_widths
 
-class test(Engine):
+class test(Style):
 	def __init__(self, **kwargs):
 		r"""
-		Construct the Test engine.
+		Construct the Test style.
 		This is only useful for easier debugging.
 		"""
 		super().__init__(linestart="^",

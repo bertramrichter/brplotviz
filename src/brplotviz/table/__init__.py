@@ -11,37 +11,37 @@ import copy
 import itertools
 import os
 
-from . import engines
-from .engines import *
+from . import styles
+from .styles import *
 from . import rules
 from .rules import *
 
-def get_engine(
-		engine,
+def get_style(
+		style,
 		**kwargs: dict,
-		) -> engines.Engine:
+		) -> styles.Style:
 	r"""
-	Return the engine or retrieve an engine object by its class name.
-	\param engine
-	This can be either an instance of the a subclass of \ref engines.Engine or a `str`.
-	If `engine` is an instance of a subclass, it is returned unchanged.
-	If `engine` is a string it is assumed to be a class name, and an
+	Return the style or retrieve an style object by its class name.
+	\param style
+	This can be either an instance of the a subclass of \ref styles.Style or a `str`.
+	If `style` is an instance of a subclass, it is returned unchanged.
+	If `style` is a string it is assumed to be a class name, and an
 	instance of that class with default settings is returned.
 	Note that the class name is case-insensitive.
-	\param kwargs Keyword arguments, passed to the constructor of the engine.
+	\param kwargs Keyword arguments, passed to the constructor of the style.
 	"""
-	if isinstance(engine, Engine):
-		return engine
-	elif isinstance(engine, type) and issubclass(engine, Engine):
-		return engine(**kwargs)
-	elif isinstance(engine, str):
+	if isinstance(style, Style):
+		return style
+	elif isinstance(style, type) and issubclass(style, Style):
+		return style(**kwargs)
+	elif isinstance(style, str):
 		try: 
-			return getattr(engines, engine.lower())(**kwargs)
+			return getattr(styles, style.lower())(**kwargs)
 		except:
-			raise RuntimeError("Unknown table layout engine: {}".format(engine))
+			raise RuntimeError("Unknown table layout style: {}".format(style))
 
 def print_table(table: list,
-		engine = "csv",
+		style = "csv",
 		head_col: list = None,
 		head_row: list = None,
 		top_left: str = "",
@@ -54,13 +54,13 @@ def print_table(table: list,
 		show: bool = None,
 		transpose_data: bool = False,
 		return_lines: bool = False,
-		engine_kwargs: dict = None,
+		style_kwargs: dict = None,
 		*args, **kwargs):
 	r"""
 	Prints the table in a nice format.
 	\param table List of lists (array-like, but can have different data types).
-	\param engine This is the engine specifying the table's style.
-		Defaults to `"csv"`, see \ref engines for available options.
+	\param style This is the style specifying the table's style.
+		Defaults to `"csv"`, see \ref styles for available options.
 	\param head_col Row heads printed as a column infront of rest of the columns.
 		Following options are available:
 		- `None` (default): The table is not prepended with an extra column.
@@ -69,9 +69,9 @@ def print_table(table: list,
 			The counting starts at 1 after the `head_row` (if present).
 	\param head_row List of column heads, printed as a line before the rest of the rows, if not left `None` (default).
 	\param top_left This is put in the top-left cell, if both `head_row` and `head_col` are provided. Defaults to `""`.
-	\param omit_headrule Switch to turn off the engine-specific \ref rules.HeadRule.
-		Defaults to `False` (show the rule, if the engine support that).
-		If the engine does not show \ref rules.HeadRule, this setting has no effect.
+	\param omit_headrule Switch to turn off the style-specific \ref rules.HeadRule.
+		Defaults to `False` (show the rule, if the style support that).
+		If the style does not show \ref rules.HeadRule, this setting has no effect.
 		Keep in mind, that this could can invalidate the table format
 		(e.g., Markdown).
 	\param align Specifies the alignment options of the columns.
@@ -104,9 +104,9 @@ def print_table(table: list,
 		Defaults to `False`.
 		Note, that `head_row` and `head_col` will not be swapped.
 	\param return_lines Switch, whether the list of formatted lines should be returned. Defaults to `False`.
-	\param engine_kwargs Keyword arguments, passed to the constructor of the engine.
+	\param style_kwargs Keyword arguments, passed to the constructor of the style.
 		This can be used to influence some aspects of the table.
-		See \ref engines.Engine.__init__() for more details.
+		See \ref styles.Style.__init__() for more details.
 	\param *args Additional positional arguments, will be ignored.
 	\param **kwargs Additional keyword arguments, will be ignored.
 	
@@ -128,8 +128,8 @@ def print_table(table: list,
 	| `head_col 0`	| `0,0`	| `0,1`	|
 	| `head_col 1`	| `1,0`	| `1,1`	|
 	"""
-	engine_kwargs = engine_kwargs if engine_kwargs is not None else {}
-	engine = get_engine(engine, **engine_kwargs)
+	style_kwargs = style_kwargs if style_kwargs is not None else {}
+	style = get_style(style, **style_kwargs)
 	# Transpose the body data, if requested
 	if transpose_data:
 		table, _ = _clean_table(table)
@@ -180,7 +180,7 @@ def print_table(table: list,
 		table = replace(table, replacement)
 	col_widths = _find_col_width(table)
 	alignments = _get_alignments(table, align)
-	col_widths = engine.modify_col_widths(col_widths, alignments)
+	col_widths = style.modify_col_widths(col_widths, alignments)
 	table =_align(table, alignments, col_widths)
 	# Transpose again operate row wise again
 	table = _transpose(table)
@@ -191,17 +191,17 @@ def print_table(table: list,
 	formatted_lines = []
 	if caption is not None:
 		formatted_lines.append(caption)
-	rule = engine.rule(col_widths, alignments, TopRule())
+	rule = style.rule(col_widths, alignments, TopRule())
 	if rule is not None:
 		formatted_lines.append(rule)
 	for row in table:
 		if not isinstance(row, Rule):
-			formatted_lines.append(engine.row(row))
+			formatted_lines.append(style.row(row))
 		else:
-			rule = engine.rule(col_widths, alignments, row)
+			rule = style.rule(col_widths, alignments, row)
 			if rule is not None:
 				formatted_lines.append(rule)
-	rule = engine.rule(col_widths, alignments, BotRule())
+	rule = style.rule(col_widths, alignments, BotRule())
 	if rule is not None:
 		formatted_lines.append(rule)
 	# Output
@@ -268,7 +268,7 @@ def print_table_LaTeX(table: list,
 			By default, all data columns will be left-aligned, which is equivalent to `"l"`.
 		- List of strings: I is assumed, that each data column has an individual format.
 			Make sure, the number of rows is in sync with the data to avoid compilation errors.
-	\param omit_headrule Switch to turn off the engine-specific \ref rules.HeadRule.
+	\param omit_headrule Switch to turn off the style-specific \ref rules.HeadRule.
 		Defaults to `False`, show the rule.
 	\param replacement  This dictionary contains the source values (to replace) as keys and the target values (to be replaced by) as values.
 		Example: to replace all `NaN` (not a number) by em-dashes and all 0 by `"nothing"`: `{"nan": "---", 0: "nothing"}`
@@ -293,13 +293,7 @@ def print_table_LaTeX(table: list,
 	\newcommand{\thfr}[1]{\multicolumn{1}{c@{}}{#1}}	% table head format, right most column
 	```
 	If specifies the formatting of the cells in the header row for the whole document.
-	To actually print the table, use the following code snippet:
-	```
-	\begin{table}[!htbp]
-	\centering
-	% <copy table content here> or \input{<filename>}
-	\end{table}
-	```
+	Then, you can copy the table into your TeX file or use `\input{<filename>}`.
 	"""
 	# Preparation
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
@@ -311,7 +305,7 @@ def print_table_LaTeX(table: list,
 		head_row_format[-1] = r"\thfr{"+"{}".format(head_row[-1])+r"}"
 		head_row = head_row_format
 	# Preamble
-	formatted_lines = []
+	formatted_lines = [r"\begin{table}[!htbp]", r"\centering"]
 	formatted_lines.append(r"\caption{" + "{}".format(caption) + r"}")
 	formatted_lines.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	formatted_lines.append(r"\begin{tabular}{@{}")
@@ -330,7 +324,7 @@ def print_table_LaTeX(table: list,
 		formatted_lines.append(table_head)
 	# Table content
 	content = print_table(table=table,
-			engine="latex",
+			style="latex",
 			align=align,
 			head_row=head_row,
 			head_col=head_col,
@@ -348,6 +342,7 @@ def print_table_LaTeX(table: list,
 	formatted_lines.extend(content)
 	# Postamble
 	formatted_lines.append(r"\end{tabular}")
+	formatted_lines.append(r"\end{table}")
 	# Output
 	_output_table(formatted_lines, file, show)
 	if return_lines:
@@ -516,7 +511,7 @@ def _newline_split(row):
 			continue
 		# A newline was found
 		cell_lines = cell.split("\n")
-		max_new_lines = max(len(extra_lines), len(cell_lines))		
+		max_new_lines = max(len(extra_lines), len(cell_lines))
 		for i in range(len(extra_lines), max_new_lines):
 			extra_lines.append([""]*len(row))
 		for extra_line_number, sub_cell in enumerate(cell_lines):
