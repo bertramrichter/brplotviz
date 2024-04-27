@@ -3,8 +3,6 @@ r"""
 This module contains the class definitions for table styles, each of
 which in turn define the look of the table.
 
-See \ref doc/style_overview.md for an overview of all available styles.
-
 \author Bertram Richter
 \date 2024
 """
