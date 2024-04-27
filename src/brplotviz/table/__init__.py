@@ -14,7 +14,6 @@ import os
 from . import styles
 from .styles import *
 from . import rules
-#from .rules import *
 
 def get_style(
 		style,
@@ -554,10 +553,10 @@ def _output_table(formatted_lines: list, file: str, show: bool):
 
 def _rule_check(rule):
 	"""
-	Returns an instance of the \ref Rule objects, of `rule`'s (sub)class.
-	If `rule` is not a \ref Rule object, `None` is returned.
+	Returns an instance of the \ref rules.Rule objects, of `rule`'s (sub)class.
+	If `rule` is not a \ref rules.Rule object, `None` is returned.
 	Apart from conversion to instances, this can be used to check whether
-	`rule` is a \ref Rule object, because \ref Rule objects, when typecast
+	`rule` is a \ref rules.Rule object, because \ref rules.Rule objects, when typecast
 	boolean to result in `True`, but `None` typecast to boolean gives `False`. 
 	"""
 	if isinstance(rule, rules.Rule):

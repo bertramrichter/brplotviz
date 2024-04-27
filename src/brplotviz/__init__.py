@@ -1,8 +1,10 @@
 
 r"""
-Contains functionalities for simplified plotting on a monochrome palette and printing of tables.
+Functionalities for simplified plotting on a monochrome palette
+printing of tables.
+
 \author Bertram Richter
-\date 2022
+\date 2024
 """
 
 from . import plot

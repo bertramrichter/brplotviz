@@ -24,7 +24,7 @@ record_names = ["sine", "cosine"]
 # Printing a table:
 brplotviz.table.print_table(
 	table=y_table,
-	engine="csv",
+	style="csv",
 	head_row=x_list,
 	head_col=record_names,
 	top_left="Values",

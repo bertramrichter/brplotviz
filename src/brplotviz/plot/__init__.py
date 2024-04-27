@@ -1,10 +1,8 @@
 
 r"""
-\file
 Contains functions for plotting.
 \author Bertram Richter
-\date 2022
-\package brplotviz.plot \copydoc plot.py
+\date 2024
 """
 
 import os

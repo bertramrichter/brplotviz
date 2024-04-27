@@ -1,10 +1,8 @@
 
 r"""
-\file
 Contains functions for setting the plot style.
 \author Bertram Richter
 \date 2022
-\package brplotviz.styleselect \copydoc styleselect.py
 """
 
 from cycler import cycler, concat
