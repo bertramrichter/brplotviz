@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.3.1] – 2024-10-14
+- Fix crach cause by setting, align to `None`, should now behave as expected.
+
 ## [v0.3] – 2024-04-27
 
 ### Added
