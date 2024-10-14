@@ -397,6 +397,8 @@ def _align(table: list, alignments: list, col_widths: list) -> list:
 	\param col_widths List of columns' widths.
 	\return Returns table where each cell in a column has the same width.
 	"""
+	if alignments is None:
+		return table
 	align_dict = {"l": "<", "c": "^", "r": ">", "": ""}
 	align_code = [align_dict.get(a, "") for a in alignments]
 	aligned = []
