@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.3.2] – 2024-10-14
+- Fix typos and links in CHANGELOG.
+
 ## [v0.3.1] – 2024-10-14
-- Fix crach cause by setting, align to `None`, should now behave as expected.
+- Fix crash caused by setting align to `None`, should now behave as expected.
 
 ## [v0.3] – 2024-04-27
 
@@ -88,7 +91,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 First published version.
 
 
-[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.3..master
+[unreleased]: https://github.com/bertramrichter/brplotviz/compare/v0.3.2..master
+[v0.3.2]: https://github.com/bertramrichter/brplotviz/compare/v0.3.2..v0.3.1
+[v0.3.1]: https://github.com/bertramrichter/brplotviz/compare/v0.3.1..v0.3
 [v0.3]: https://github.com/bertramrichter/brplotviz/compare/v0.3..v0.2.2
 [v0.2.2]: https://github.com/bertramrichter/brplotviz/compare/v0.2.3..v0.2.2
 [v0.2.2]: https://github.com/bertramrichter/brplotviz/compare/v0.2.2..v0.2.1

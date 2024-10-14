@@ -1,7 +1,7 @@
 [project]
 name = "brplotviz"
 
-version = "0.3.1"
+version = "0.3.2"
 
 description = "Utilities for nicely formatted tables and plots"
 
