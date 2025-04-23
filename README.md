@@ -88,8 +88,8 @@ brplotviz.table.print_table_LaTeX(
 
 The result is the following LaTeX code.
 Note, that `brplotviz` will try to fill in the column alignment based on `align`.
-TO overwrite the default, use the argument `LaTeX_format`.
-`LaTeX_format` works analougously to `align`.
+To overwrite the default, use the argument `LaTeX_format`.
+`LaTeX_format` works in analogy to `align`.
 
 ```
 \begin{table}[!htbp]
