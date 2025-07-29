@@ -1,5 +1,5 @@
 
-"""
+r"""
 Generate an overview over all available table styles.
 
 \author Bertram Richter
@@ -36,9 +36,10 @@ file_content=[
 styles = [
 	"csv",
 	"tsv",
+	"html"
 	"latex",
 	"markdown",
-	"test"
+	"test",
 	]
 for style in styles:
 	file_content.append("`{}`".format(style))

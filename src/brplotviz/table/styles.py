@@ -133,6 +133,54 @@ class tsv(csv):
 		"""
 		super().__init__(itemsep, **kwargs)
 
+class html(Style):
+	r"""
+	This is a basic HTML table style.
+	Inline CSS styling can be applied using the \ref hmtl_table_settings parameter.
+	"""
+	def __init__(self,
+				hmtl_table_settings: str = "",
+				**kwargs):
+		r"""
+		Constructor of the html style engine.
+		\param hmtl_table_settings \copybrief hmtl_table_settings \copydetails hmtl_table_settings
+		\param **kwargs Additional keyword arguments, ignored.
+		"""
+		super().__init__(
+			linestart=r"<tr><td>",
+			firstsep=r"</td><td>",
+			itemsep=r"</td><td>",
+			lineend=r"</td></tr>",
+			**kwargs)
+		## Inline CSS table styling, which will be included into the `<table >` tag.
+		## The content is inserted without any processing, only a conversion to `str` is done.
+		## In the template of `<table hmtl_table_settings>`, the string
+		## `hmtl_table_settings` will simply be replaced by its content.
+		## Hence, you could put anything here that you would otherwise
+		## put into the opening tag of the table.
+		self.hmtl_table_settings = hmtl_table_settings
+	def rule(self, widths: list, align: list, rule_type: rules.Rule) -> str:
+		r"""
+		\copydoc Style.rule()
+		
+		The table rules use the rules provided by[booktabs](https://ctan.org/pkg/booktabs/).
+		Before the tabular part, the table is started with `"\topule"`,
+		the header line is separated by `"\midrule"` and the tabular part
+		is closed with `"\bottomrule"`.
+		The \ref rules.ExtraRule is translated into `"\addlinespace"`,
+		which results in a small vertical space between two rows.
+		"""
+		if isinstance(rule_type, rules.TopRule):
+			return r"<table " + str(self.hmtl_table_settings) + r"><thead>"
+		elif isinstance(rule_type, rules.HeadRule):
+			return r"</thead><tbody>"
+		elif isinstance(rule_type, rules.BotRule):
+			return r"</tbody></table>"
+		elif isinstance(rule_type, rules.ExtraRule):
+			return None
+		else:
+			return None
+
 class latex(Style):
 	r"""
 	A LaTeX table, columns are separated by the ampersand (`"&"`) and the

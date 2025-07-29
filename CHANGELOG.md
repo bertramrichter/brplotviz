@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New table style: `html`
+
 ## [v0.3.2] – 2024-10-14
 - Fix typos and links in CHANGELOG.
 
