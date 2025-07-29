@@ -61,6 +61,22 @@ de
 and f	45.0   	   
 ```
 
+`"html"`
+The simplest HTML table.
+Spanning of columns and cells is not supported.
+
+```
+<table ><thead>
+<tr><td>Top left</td><td>Col 1</td><td> Col 2</td><td>Col 3</td></tr>
+</thead><tbody>
+<tr><td>1       </td><td>  a  </td><td>123.46</td><td> 12.0</td></tr>
+<tr><td>2       </td><td> bc  </td><td> 23.34</td><td>345.0</td></tr>
+<tr><td>        </td><td> de  </td><td>      </td><td>     </td></tr>
+<tr><td>3       </td><td>and f</td><td> 45.00</td><td>     </td></tr>
+</tbody></table>
+```
+
+
 `"latex"`
 A table using the LaTeX markup with `booktabs` rules.
 This only sets the content that goes into the body of a `tabular` environment.
@@ -75,7 +91,7 @@ and f&45.0   &   \\
 \bottomrule
 ```
 
-A complete LaTeX environment is output the wrapper function `brplotviz.table.print_table_LaTeX()`.
+A complete LaTeX table environment is output by the wrapper function `brplotviz.table.print_table_LaTeX()`.
 This function accepts the same (and some more) arguments than `brplotviz.table.print_table()`
 
 ```py
@@ -110,7 +126,7 @@ and f&45.0   &   \\
 \end{table}
 ```
 
-"markdown"`outputs a Markdown table.
+`"markdown"`outputs a Markdown table.
 
 ```
 |a    |123.456|12  |

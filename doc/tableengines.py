@@ -36,7 +36,7 @@ file_content=[
 styles = [
 	"csv",
 	"tsv",
-	"html"
+	"html",
 	"latex",
 	"markdown",
 	"test",
