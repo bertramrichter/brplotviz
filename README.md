@@ -126,7 +126,7 @@ and f&45.0   &   \\
 \end{table}
 ```
 
-`"markdown"`outputs a Markdown table.
+`"markdown"` outputs a GitHub/GitLab flawored Markdown table.
 
 ```
 |a    |123.456|12  |
