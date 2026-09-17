@@ -16,9 +16,9 @@ The documentation will be assing it to the directory `./Documentation`
 
 `brplotviz.plot.table` provides functions to format and output tabular data.
 This tabular data is expected to be a sequence of sequences (list of lists ect.).
-When a row (or column) is shorter than the others the missing cells are added as empty ones.
+When a row (or column) is shorter than the others, the row is filled up with empty cells.
 Multi-line cells (containing newline characters) are supported,
-additional lines are inserted in the output plain text table a required.
+additional lines are inserted in the output plain text table as required (which might break the hierarchical structure in some styles).
 
 ### Styles
 
@@ -250,7 +250,7 @@ table.print_table(
 
 ### Rules
 
-The horizontal lines in the table ar ecalled rules.
+The horizontal lines in the table are called rules.
 To add an extra rule include a `brplotviz.table.rules.ExtraRule` in the `table`.
 Note, that not all styles support `ExtraLines`.
 The rule separating the header column from the body can be suppressed by `omit_head_rule=True`.
@@ -258,10 +258,10 @@ The rule separating the header column from the body can be suppressed by `omit_h
 ### Additional options for table output
 
 To transpose the `table` (switch columns with rows), use `transpose=True`.
-Note, that this will not switch `head_col` and `head_row`.
+Note that this will not switch `head_col` and `head_row`.
 
 With `replacement`, a dictionary can be passed to replace cell content.
-If a cell's content is found in the replacement`'s keys, the content is replaced with the associated value.
+If a cell's content is found in the `replacement`'s keys, the content is replaced with the associated value.
 Note, that the replacement takes place after formatting.
 
 By default `brplotviz.table.print_table()`, prints the typeset table and returns nothing (`None`).
@@ -289,7 +289,7 @@ record_names = ["sine", "cosine"]
 ```
 
 Plotting a single line-graph and a scatter plot is as simple as:
-Each one is shown on separately.
+Each one is shown on screen separately (the second diagram will be plotted after closing the first diagram).
 
 ```py
 brplotviz.plot.single_line(x_list, y_list_sin)
@@ -322,9 +322,9 @@ brplotviz.plot.bar_categories(y_table, category_names=x_list)
 
 By default, plots are shown on screen and tables are printed to the standard output.
 Plots and tables can be written to disk with the keyword argument `file=<file path here>`.
-If `file` is set, the nothing shown (neither plots or tables), unless `show=True` is set explicitely.
+If `file` is provided, interactive output is omitted (i.e., neither plots or tables will appear on screen), unless `show=True` is set explicitely.
 
-**Warning**: the file is overwritten without further questions.
+**Warning**: the `file` is overwritten without asking for confirmation!
 
 # Licence and Copyright
 
