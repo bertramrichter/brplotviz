@@ -329,7 +329,7 @@ If `file` is set, the nothing shown (neither plots or tables), unless `show=True
 # Licence and Copyright
 
 **Author:** Bertram Richter  
-**Copyright:** Copyright by the author, 2024.  
+**Copyright:** Copyright by the author, 2024 – 2026.  
 **License:** This software is released under GPLv3, see [LICENSE](./LICENSE) for details
 
 # Dependencies
