@@ -42,7 +42,7 @@ def get_plot_style_hatch():
 	"""
 	edgecolor = cycler("edgecolor", ["k"])
 	mono_fill = edgecolor * cycler('hatch', [""]) * cycler('color', ['w', "tab:gray","k"])
-	mono_hatches = cycler('color', ['w', "tab:grey"]) * edgecolor * cycler('hatch', ['///', "\\\\\\", 'xxx', '--', '...','\///', "++", "o", "++.", ".o"])
+	mono_hatches = cycler('color', ['w', "tab:grey"]) * edgecolor * cycler('hatch', ['///', "\\\\\\", 'xxx', '--', '...','\\///', "++", "o", "++.", ".o"])
 	plot_style = concat(mono_fill, mono_hatches)
 	return plot_style
 
