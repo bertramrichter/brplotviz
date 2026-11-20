@@ -284,34 +284,21 @@ def print_table_LaTeX(table: list,
 	\param return_lines Switch, whether the list of formatted lines should be returned. Defaults to `False`.
 	\param *args Additional positional arguments, will be ignored.
 	\param **kwargs Additional keyword arguments, will be ignored.
-	
-	To use the generated table, add the following code to your preamble:
-	```
-	\newcommand{\thfl}[1]{\multicolumn{1}{@{}l}{#1}}	% table head format, left most column
-	\newcommand{\thfm}[1]{\multicolumn{1}{c}{#1}}		% table head format, middle column
-	\newcommand{\thfr}[1]{\multicolumn{1}{c@{}}{#1}}	% table head format, right most column
-	```
-	If specifies the formatting of the cells in the header row for the whole document.
-	Then, you can copy the table into your TeX file or use `\input{<filename>}`.
 	"""
 	# Preparation
 	LaTeX_label = LaTeX_label if LaTeX_label is not None else file
-	top_left = r"\thfl{"+"{}".format(top_left)+r"}"
-	if head_row is not None and len(head_row):
-		head_row_format = [r"\thfm{"+"{}".format(entry)+r"}" for entry in head_row]
-		if head_col is None:
-			head_row_format[0] = r"\thfl{"+"{}".format(head_row[0])+r"}"
-		head_row_format[-1] = r"\thfr{"+"{}".format(head_row[-1])+r"}"
-		head_row = head_row_format
 	# Preamble
-	formatted_lines = [r"\begin{table}[!htbp]", r"\centering"]
+	formatted_lines = [r"\begin{table}[htbp]"]
 	formatted_lines.append(r"\caption{" + "{}".format(caption) + r"}")
 	formatted_lines.append(r"\label{tab:" + "{}".format(LaTeX_label) + r"}")
 	formatted_lines.append(r"\begin{tabular}{@{}")
 	if head_col is not None:
 		formatted_lines.append(r"*{1}{l}")
 	if isinstance(LaTeX_format, str):
-		formatted_lines.append(r"*{" + "{}".format(len(table[0])) + "}{" + "{}".format(LaTeX_format) + "}")
+		if transpose_data:
+			formatted_lines.append(r"*{" + "{}".format(len(table)) + "}{" + "{}".format(LaTeX_format) + "}")
+		else:
+			formatted_lines.append(r"*{" + "{}".format(len(table[0])) + "}{" + "{}".format(LaTeX_format) + "}")
 	elif isinstance(LaTeX_format, (list, tuple)):
 		for col in LaTeX_format:
 			formatted_lines.append(r"*{1}{" + "{}".format(col) + "}")

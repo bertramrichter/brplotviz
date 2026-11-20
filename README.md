@@ -108,8 +108,7 @@ To overwrite the default, use the argument `LaTeX_format`.
 `LaTeX_format` works in analogy to `align`.
 
 ```
-\begin{table}[!htbp]
-\centering
+\begin{table}[htbp]
 \caption{This is the caption}
 \label{tab:example}
 \begin{tabular}{@{}
